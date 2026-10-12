@@ -10,6 +10,7 @@ import { searchHanziByPinyin, type HanziCandidate } from './utils/pinyinSearch'
 import { extractTextFromFile } from './utils/fileExtractor'
 import { PaymentModal } from './components/PaymentModal'
 import { AuthModal } from './components/AuthModal'
+import { WelcomeModal } from './components/WelcomeModal'
 import {
   type AuthUser,
   getCurrentUser,
@@ -36,6 +37,9 @@ function App() {
     return guestCredits !== null ? parseInt(guestCredits, 10) : 10 // Khách chưa đăng nhập có 10 credits thử
   })
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false)
+  const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState<boolean>(() => {
+    return localStorage.getItem('han_tu_hide_welcome') !== 'true'
+  })
 
   // Đồng bộ credits từ Cloud khi mở web hoặc khi user thay đổi
   useEffect(() => {
@@ -1197,6 +1201,12 @@ function App() {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onLoginSuccess={handleLoginSuccess}
+      />
+
+      {/* Modal chào mừng người dùng mới (Chuẩn quốc tế) */}
+      <WelcomeModal
+        isOpen={isWelcomeModalOpen}
+        onClose={() => setIsWelcomeModalOpen(false)}
       />
     </div>
   )
