@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { pinyin as getPinyin } from 'pinyin-pro'
 import {
   TianzigeBox,
@@ -14,9 +14,11 @@ import {
   type AuthUser,
   getCurrentUser,
   getUserCredits,
+  fetchUserCreditsCloud,
   saveUserCredits,
   logoutUser,
 } from './utils/authService'
+import { supabase } from './utils/supabaseClient'
 import './App.css'
 
 function App() {
@@ -35,6 +37,40 @@ function App() {
   })
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false)
 
+  // Đồng bộ credits từ Cloud khi mở web hoặc khi user thay đổi
+  useEffect(() => {
+    if (currentUser?.id) {
+      fetchUserCreditsCloud(currentUser.id).then((cloudCredits) => {
+        setUserCredits(cloudCredits)
+      })
+    }
+  }, [currentUser?.id])
+
+  // Lắng nghe sự kiện đăng nhập Supabase (ví dụ sau khi OAuth Google redirect về)
+  useEffect(() => {
+    if (!supabase) return
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+        const u = session.user
+        const meta = u.user_metadata || {}
+        const authUser: AuthUser = {
+          id: u.id,
+          email: u.email || '',
+          name: meta.full_name || meta.name || (u.email ? u.email.split('@')[0] : 'Người dùng'),
+          avatar: meta.avatar_url || meta.picture || '',
+          role: 'user',
+        }
+        setCurrentUser(authUser)
+        const cloudCredits = await fetchUserCreditsCloud(u.id)
+        setUserCredits(cloudCredits)
+      }
+    })
+
+    return () => {
+      authListener?.subscription.unsubscribe()
+    }
+  }, [])
+
   // Cập nhật credits
   const updateCredits = (newAmount: number) => {
     setUserCredits(newAmount)
@@ -46,9 +82,9 @@ function App() {
   }
 
   // Khi đăng nhập thành công
-  const handleLoginSuccess = (user: AuthUser) => {
+  const handleLoginSuccess = async (user: AuthUser) => {
     setCurrentUser(user)
-    const credits = getUserCredits(user.id)
+    const credits = await fetchUserCreditsCloud(user.id)
     setUserCredits(credits)
   }
 

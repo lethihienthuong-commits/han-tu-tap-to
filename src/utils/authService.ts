@@ -99,3 +99,80 @@ export async function signInWithGoogleOAuth(): Promise<{ error?: string }> {
   if (error) return { error: error.message }
   return {}
 }
+
+// Đăng ký tài khoản Email bằng Supabase
+export async function signUpWithEmail(email: string, password: string, name?: string): Promise<{ user?: AuthUser; error?: string }> {
+  if (isSupabaseConfigured() && supabase) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name || email.split('@')[0],
+          name: name || email.split('@')[0],
+        },
+      },
+    })
+    if (error) return { error: error.message }
+    if (data.user) {
+      const authUser: AuthUser = {
+        id: data.user.id,
+        email: data.user.email || email,
+        name: name || email.split('@')[0],
+        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${name || email.split('@')[0]}`,
+        role: 'user',
+      }
+      loginUser(authUser)
+      return { user: authUser }
+    }
+  }
+
+  // Fallback
+  const cleanEmail = email.trim().toLowerCase()
+  const displayName = name?.trim() || cleanEmail.split('@')[0]
+  const user: AuthUser = {
+    id: 'user_' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 10),
+    name: displayName,
+    email: cleanEmail,
+    avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${displayName}`,
+    role: 'user',
+  }
+  loginUser(user)
+  return { user }
+}
+
+// Đăng nhập tài khoản Email bằng Supabase
+export async function signInWithEmail(email: string, password: string): Promise<{ user?: AuthUser; error?: string }> {
+  if (isSupabaseConfigured() && supabase) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+    if (error) return { error: error.message }
+    if (data.user) {
+      const meta = data.user.user_metadata || {}
+      const authUser: AuthUser = {
+        id: data.user.id,
+        email: data.user.email || email,
+        name: meta.full_name || meta.name || email.split('@')[0],
+        avatar: meta.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${email.split('@')[0]}`,
+        role: 'user',
+      }
+      loginUser(authUser)
+      return { user: authUser }
+    }
+  }
+
+  // Fallback
+  const cleanEmail = email.trim().toLowerCase()
+  const displayName = cleanEmail.split('@')[0]
+  const user: AuthUser = {
+    id: 'user_' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 10),
+    name: displayName,
+    email: cleanEmail,
+    avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${displayName}`,
+    role: 'user',
+  }
+  loginUser(user)
+  return { user }
+}

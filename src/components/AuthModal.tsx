@@ -1,5 +1,11 @@
 import React, { useState } from 'react'
-import { type AuthUser, loginUser } from '../utils/authService'
+import {
+  type AuthUser,
+  loginUser,
+  signInWithGoogleOAuth,
+  signUpWithEmail,
+  signInWithEmail,
+} from '../utils/authService'
 import './AuthModal.css'
 
 interface AuthModalProps {
@@ -19,55 +25,78 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [name, setName] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
 
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
   if (!isOpen) return null
 
-  // Đăng nhập nhanh bằng tài khoản Google (Nhập Gmail thật của người dùng)
-  const handleGoogleLogin = () => {
-    const inputGmail = window.prompt(
-      'ĐĂNG NHẬP VỚI TÀI KHOẢN GOOGLE:\n\nNhập địa chỉ Gmail của bạn để kết nối:',
-      email || 'example@gmail.com'
-    )
-
-    if (!inputGmail || !inputGmail.trim()) return
-
-    const cleanEmail = inputGmail.trim().toLowerCase()
-    const namePart = cleanEmail.split('@')[0]
-    const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1)
-
-    const googleUser: AuthUser = {
-      id: 'google_' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 12),
-      name: formattedName,
-      email: cleanEmail,
-      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${formattedName}`,
-      role: 'vip',
+  // Đăng nhập bằng tài khoản Google thật (OAuth) hoặc qua prompt
+  const handleGoogleLogin = async () => {
+    setIsLoading(true)
+    setErrorMessage('')
+    try {
+      const { error } = await signInWithGoogleOAuth()
+      if (error) {
+        // Nếu môi trường chưa hỗ trợ redirect hoặc báo lỗi, fallback cho phép nhập Gmail
+        const inputGmail = window.prompt(
+          'ĐĂNG NHẬP VỚI TÀI KHOẢN GOOGLE:\n\nNhập địa chỉ Gmail của bạn để kết nối:',
+          email || 'example@gmail.com'
+        )
+        if (inputGmail && inputGmail.trim()) {
+          const cleanEmail = inputGmail.trim().toLowerCase()
+          const namePart = cleanEmail.split('@')[0]
+          const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1)
+          const googleUser: AuthUser = {
+            id: 'google_' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 12),
+            name: formattedName,
+            email: cleanEmail,
+            avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${formattedName}`,
+            role: 'vip',
+          }
+          loginUser(googleUser)
+          onLoginSuccess(googleUser)
+          onClose()
+        }
+      }
+    } finally {
+      setIsLoading(false)
     }
-
-    loginUser(googleUser)
-    onLoginSuccess(googleUser)
-    onClose()
   }
 
-  // Đăng nhập / Đăng ký bằng Email & Mật khẩu
-  const handleSubmit = (e: React.FormEvent) => {
+  // Đăng nhập / Đăng ký bằng Email & Mật khẩu vào Supabase Cloud
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email.trim() || !password.trim()) {
       setErrorMessage('Vui lòng điền đầy đủ Email và Mật khẩu!')
       return
     }
 
-    const cleanEmail = email.trim().toLowerCase()
-    const displayName = tab === 'register' && name.trim() ? name.trim() : cleanEmail.split('@')[0]
-
-    const user: AuthUser = {
-      id: 'user_' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 10),
-      name: displayName,
-      email: cleanEmail,
-      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${displayName}`,
+    setIsLoading(true)
+    setErrorMessage('')
+    try {
+      if (tab === 'register') {
+        const res = await signUpWithEmail(email, password, name)
+        if (res.error) {
+          setErrorMessage(res.error)
+          return
+        }
+        if (res.user) {
+          onLoginSuccess(res.user)
+          onClose()
+        }
+      } else {
+        const res = await signInWithEmail(email, password)
+        if (res.error) {
+          setErrorMessage(res.error)
+          return
+        }
+        if (res.user) {
+          onLoginSuccess(res.user)
+          onClose()
+        }
+      }
+    } finally {
+      setIsLoading(false)
     }
-
-    loginUser(user)
-    onLoginSuccess(user)
-    onClose()
   }
 
   return (
@@ -149,8 +178,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             />
           </div>
 
-          <button type="submit" className="btn-auth-submit">
-            {tab === 'login' ? 'Đăng Nhập Ngay' : 'Tạo Tài Khoản & Nhận 25 Credits'}
+          <button type="submit" className="btn-auth-submit" disabled={isLoading}>
+            {isLoading
+              ? 'Đang kết nối...'
+              : tab === 'login'
+              ? 'Đăng Nhập Ngay'
+              : 'Tạo Tài Khoản & Nhận 25 Credits'}
           </button>
         </form>
 

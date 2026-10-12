@@ -1,4 +1,4 @@
--- Bảng lưu hồ sơ người dùng và số dư Credits thật
+-- 1. Bảng lưu hồ sơ người dùng và số dư Credits thật
 create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
   email text,
@@ -10,20 +10,21 @@ create table if not exists public.profiles (
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- Kích hoạt Row Level Security (RLS) để bảo vệ dữ liệu
+-- Kích hoạt Row Level Security (RLS)
 alter table public.profiles enable row level security;
 
--- Cho phép người dùng xem hồ sơ của chính mình
+-- Xóa policy cũ nếu đã tồn tại trước đó để tránh lỗi trùng lặp khi chạy lại
+drop policy if exists "Users can view their own profile" on public.profiles;
 create policy "Users can view their own profile"
   on public.profiles for select
   using (auth.uid() = id);
 
--- Cho phép người dùng cập nhật thông tin cá nhân (trừ việc tự nâng credits)
+drop policy if exists "Users can update own profile name/avatar" on public.profiles;
 create policy "Users can update own profile name/avatar"
   on public.profiles for update
   using (auth.uid() = id);
 
--- Tự động tạo hồ sơ profile và tặng 25 credits khi người dùng đăng ký tài khoản mới (Google hoặc Email)
+-- 2. Tự động tạo profile và tặng 25 credits khi có người dùng mới đăng ký
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
@@ -34,17 +35,19 @@ begin
     coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)),
     coalesce(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture', ''),
     25
-  );
+  )
+  on conflict (id) do nothing;
   return new;
 end;
 $$ language plpgsql security definer;
 
--- Trigger kích hoạt hàm trên mỗi khi có user mới
-create or replace trigger on_auth_user_created
+-- Trigger kích hoạt hàm khi có user mới
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
--- Bảng lưu lịch sử giao dịch nạp tiền qua SePAY / VietQR
+-- 3. Bảng lưu lịch sử giao dịch nạp tiền qua SePAY / VietQR
 create table if not exists public.transactions (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references public.profiles(id) on delete set null,
@@ -61,6 +64,7 @@ create table if not exists public.transactions (
 
 alter table public.transactions enable row level security;
 
+drop policy if exists "Users can view own transactions" on public.transactions;
 create policy "Users can view own transactions"
   on public.transactions for select
   using (auth.uid() = user_id);
