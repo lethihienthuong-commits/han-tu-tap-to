@@ -34,6 +34,57 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Huy hiệu Credits & Nút nạp */
+.user-credits-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 20px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  box-shadow: 0 1px 3px rgba(22, 163, 74, 0.15);
+}
+
+.user-credits-badge:hover {
+  background: #dcfce7;
+  border-color: #4ade80;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
+}
+
+.credits-gem {
+  font-size: 14px;
+}
+
+.credits-val {
+  font-size: 12px;
+  color: #166534;
+}
+
+.credits-val strong {
+  font-size: 13px;
+  color: #15803d;
+}
+
+.credits-add-btn {
+  background: #16a34a;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  transition: all 0.15s ease;
+}
+
+.user-credits-badge:hover .credits-add-btn {
+  background: #15803d;
 }
 
 .vip-badge-btn {

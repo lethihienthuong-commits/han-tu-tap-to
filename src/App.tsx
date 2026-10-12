@@ -8,9 +8,30 @@ import {
 import { exportToWord } from './utils/exportDocx'
 import { searchHanziByPinyin, type HanziCandidate } from './utils/pinyinSearch'
 import { extractTextFromFile } from './utils/fileExtractor'
+import { PaymentModal } from './components/PaymentModal'
 import './App.css'
 
 function App() {
+  // Quản lý Credits nạp tiền (Lưu trữ cục bộ cho người dùng, mặc định tặng 20 credits dùng thử)
+  const [userCredits, setUserCredits] = useState<number>(() => {
+    const saved = localStorage.getItem('user_credits')
+    return saved !== null ? parseInt(saved, 10) : 25 // Tặng 25 credits khởi đầu
+  })
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false)
+
+  // Cập nhật credits và lưu vào localStorage
+  const updateCredits = (newAmount: number) => {
+    setUserCredits(newAmount)
+    localStorage.setItem('user_credits', newAmount.toString())
+  }
+
+  // Khi nạp tiền thành công
+  const handlePaymentSuccess = (addedCredits: number, planName: string) => {
+    const updated = userCredits + addedCredits
+    updateCredits(updated)
+    alert(`🎉 Nạp thành công ${planName}! Bạn được cộng thêm +${addedCredits} Credits vào tài khoản.`)
+  }
+
   // Chữ và pinyin được chọn hiện tại
   const [selectedChar, setSelectedChar] = useState<string>('好')
   const [selectedPinyin, setSelectedPinyin] = useState<string>('hǎo')
@@ -244,6 +265,19 @@ function App() {
   // Xử lý xuất file Word (.docx)
   const handleExportWord = async () => {
     const willExportMulti = isVipMode && effectiveBatchItems.length > 1
+    const pagesToExport = willExportMulti ? effectiveBatchItems.length : 1
+
+    // Kiểm tra số dư Credits (Mỗi trang tốn 1 credit khi xuất bộ nhiều trang VIP)
+    if (willExportMulti) {
+      if (userCredits < pagesToExport) {
+        setIsPaymentModalOpen(true)
+        alert(
+          `⚠️ Bạn cần ${pagesToExport} Credits để xuất ${pagesToExport} trang A4, nhưng số dư hiện tại chỉ còn ${userCredits} Credits.\n\nVui lòng nạp thêm Credits để tiếp tục xuất file nhé!`
+        )
+        return
+      }
+    }
+
     const singleExportChar = effectiveBatchItems.length === 1 ? effectiveBatchItems[0].char : previewItem.char
     const singleExportPinyin = effectiveBatchItems.length === 1 ? effectiveBatchItems[0].pinyin : previewItem.pinyin
 
@@ -272,8 +306,15 @@ function App() {
         multiPageItems: willExportMulti ? effectiveBatchItems : undefined,
       })
 
-      setExportMessage('Đã tải xuống file Word thành công!')
-      setTimeout(() => setExportMessage(''), 3000)
+      // Trừ credits tương ứng với số trang đã xuất
+      if (willExportMulti) {
+        const remaining = userCredits - pagesToExport
+        updateCredits(remaining)
+        setExportMessage(`Đã tải xuống thành công! (Trừ ${pagesToExport} Credits, còn lại ${remaining})`)
+      } else {
+        setExportMessage('Đã tải xuống file Word thành công!')
+      }
+      setTimeout(() => setExportMessage(''), 3500)
     } catch (error) {
       console.error('Lỗi khi xuất file Word:', error)
       alert('Có lỗi xảy ra khi tạo file Word. Vui lòng thử lại!')
@@ -300,6 +341,11 @@ function App() {
           <div className="brand-text-wrap">
             <div className="brand-title-row">
               <h1>Hán Tự Tập Tô</h1>
+              <div className="user-credits-badge" onClick={() => setIsPaymentModalOpen(true)} title="Bấm để nạp thêm Credits">
+                <span className="credits-gem">💎</span>
+                <span className="credits-val"><strong>{userCredits}</strong> Credits</span>
+                <span className="credits-add-btn">+ Nạp thêm</span>
+              </div>
               <button
                 type="button"
                 className={`vip-badge-btn ${isVipMode ? 'active' : ''}`}
@@ -862,6 +908,14 @@ function App() {
           </div>
         </div>
       </main>
+
+      {/* Modal nạp tiền Credits VIP */}
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        currentCredits={userCredits}
+        onPaymentSuccess={handlePaymentSuccess}
+      />
     </div>
   )
 }
