@@ -804,8 +804,8 @@ function App() {
 
             {/* 7. Tab Số dòng có chữ: Cho phép điền số dòng có chữ, không vượt quá tổng số dòng */}
             <div className="input-group design-blueprint-group">
-              <label htmlFor="blueprintRowsInput" title="Nhập số dòng có chữ mẫu, các dòng còn lại là ô kẻ trống">
-                Số dòng có chữ
+              <label htmlFor="blueprintRowsInput" title="Số dòng có chữ mẫu (các dòng còn lại là ô kẻ trống)">
+                Dòng có chữ
               </label>
               <div className="blueprint-input-wrap">
                 <input
@@ -824,7 +824,6 @@ function App() {
                     if (isNaN(num) || num < 0) {
                       setCharRowLimit(0)
                     } else if (num > rows) {
-                      // Tự động chặn không cho vượt quá tổng số dòng của trang
                       setCharRowLimit(rows)
                     } else {
                       setCharRowLimit(num)
@@ -833,7 +832,7 @@ function App() {
                   placeholder={`${rows}`}
                   className="blueprint-number-input"
                 />
-                <span className="blueprint-max-hint">/ {rows} dòng</span>
+                <span className="blueprint-max-hint">/ {rows}</span>
               </div>
             </div>
           </div>
