@@ -85,7 +85,7 @@ export async function logoutUser(): Promise<void> {
   }
 }
 
-// Đăng nhập Google thật bằng Supabase OAuth
+// Đăng nhập Google thật bằng Supabase OAuth (Bắt buộc hiện danh sách tài khoản Gmail đang có trên trình duyệt)
 export async function signInWithGoogleOAuth(): Promise<{ error?: string }> {
   if (!isSupabaseConfigured() || !supabase) {
     return { error: 'Chưa cấu hình Supabase URL & Key' }
@@ -94,10 +94,55 @@ export async function signInWithGoogleOAuth(): Promise<{ error?: string }> {
     provider: 'google',
     options: {
       redirectTo: window.location.origin,
+      queryParams: {
+        prompt: 'select_account', // Bắt buộc Google mở danh sách tất cả các tài khoản Gmail trên máy
+        access_type: 'offline',
+      },
     },
   })
   if (error) return { error: error.message }
   return {}
+}
+
+// Gửi mã OTP xác thực về Email người dùng
+export async function sendOtpToEmail(email: string): Promise<{ error?: string }> {
+  if (!isSupabaseConfigured() || !supabase) {
+    return { error: 'Chưa kết nối Supabase Cloud' }
+  }
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      shouldCreateUser: true,
+    },
+  })
+  if (error) return { error: error.message }
+  return {}
+}
+
+// Xác thực mã OTP gửi về Email
+export async function verifyEmailOtp(email: string, token: string): Promise<{ user?: AuthUser; error?: string }> {
+  if (!isSupabaseConfigured() || !supabase) {
+    return { error: 'Chưa kết nối Supabase Cloud' }
+  }
+  const { data, error } = await supabase.auth.verifyOtp({
+    email,
+    token: token.trim(),
+    type: 'email',
+  })
+  if (error) return { error: error.message }
+  if (data.user) {
+    const meta = data.user.user_metadata || {}
+    const authUser: AuthUser = {
+      id: data.user.id,
+      email: data.user.email || email,
+      name: meta.full_name || meta.name || email.split('@')[0],
+      avatar: meta.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${email.split('@')[0]}`,
+      role: 'user',
+    }
+    loginUser(authUser)
+    return { user: authUser }
+  }
+  return { error: 'Mã xác thực không hợp lệ hoặc đã hết hạn!' }
 }
 
 // Đăng ký tài khoản Email bằng Supabase
