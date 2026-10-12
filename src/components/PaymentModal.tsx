@@ -36,19 +36,24 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const totalPlanCredits = selectedPlan.credits + (selectedPlan.bonusCredits || 0)
 
   // Cấu hình ngân hàng nhận tiền
-  const BANK_BIN = import.meta.env.VITE_SEPAY_BANK_BIN || '970407' // Mã ngân hàng Techcombank
-  const BANK_NAME = import.meta.env.VITE_SEPAY_BANK_NAME || 'Techcombank'
-  const ACCOUNT_NO = import.meta.env.VITE_SEPAY_ACCOUNT_NO || '19032752672024'
-  const ACCOUNT_NAME = import.meta.env.VITE_SEPAY_ACCOUNT_NAME || 'LE THI HIEN THUONG'
+  const BANK_BIN = (import.meta.env.VITE_SEPAY_BANK_BIN || '970407').toString().trim() // Mã ngân hàng Techcombank
+  const BANK_NAME = (import.meta.env.VITE_SEPAY_BANK_NAME || 'Techcombank').toString().trim()
+  const ACCOUNT_NO = (import.meta.env.VITE_SEPAY_ACCOUNT_NO || '19032752672024').toString().trim()
+  const ACCOUNT_NAME = (import.meta.env.VITE_SEPAY_ACCOUNT_NAME || 'LE THI HIEN THUONG').toString().trim()
 
   // Mã giao dịch thanh toán duy nhất (dùng để SePAY tự động nhận diện và cộng điểm)
   const [transactionCode] = useState<string>(() => {
-    const userPrefix = currentUser ? currentUser.email.split('@')[0].slice(0, 4).toUpperCase() : 'HT'
-    return `${userPrefix}${Math.floor(100000 + Math.random() * 900000)}`
+    try {
+      const userPrefix = currentUser && currentUser.email ? currentUser.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '').slice(0, 4).toUpperCase() : 'HT'
+      return `${userPrefix || 'HT'}${Math.floor(100000 + Math.random() * 900000)}`
+    } catch {
+      return `HT${Math.floor(100000 + Math.random() * 900000)}`
+    }
   })
 
   // Tạo URL mã VietQR chuẩn liên ngân hàng NAPAS
-  const qrUrl = `https://api.vietqr.io/image/${BANK_BIN}-${ACCOUNT_NO}-compact.jpg?amount=${selectedPlan.price}&addInfo=${transactionCode}&accountName=${encodeURIComponent(
+  const planPrice = selectedPlan?.price || 99000
+  const qrUrl = `https://api.vietqr.io/image/${BANK_BIN}-${ACCOUNT_NO}-compact.jpg?amount=${planPrice}&addInfo=${transactionCode}&accountName=${encodeURIComponent(
     ACCOUNT_NAME
   )}`
 
@@ -129,27 +134,17 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             </div>
 
             <div className="modal-footer-action">
-              {!currentUser ? (
-                <div className="login-prompt-before-pay">
-                  <p>💡 Bạn cần đăng nhập tài khoản để lưu giữ số Credits đã nạp vĩnh viễn.</p>
-                  <button
-                    type="button"
-                    className="btn-proceed-checkout"
-                    onClick={() => {
-                      onRequireLogin()
-                    }}
-                  >
-                    🔑 Đăng Nhập Để Thanh Toán {selectedPlan.priceDisplay}
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  className="btn-proceed-checkout"
-                  onClick={() => setStep('checkout')}
-                >
-                  Tiếp tục thanh toán {selectedPlan.priceDisplay} ({totalPlanCredits} Credits) →
-                </button>
+              <button
+                type="button"
+                className="btn-proceed-checkout"
+                onClick={() => setStep('checkout')}
+              >
+                Tiếp tục thanh toán {selectedPlan.priceDisplay} ({totalPlanCredits} Credits) →
+              </button>
+              {!currentUser && (
+                <p className="guest-note-text" style={{ marginTop: '8px', fontSize: '12px', color: '#64748b', textAlign: 'center' }}>
+                  (Bạn có thể <span style={{ color: '#2563eb', cursor: 'pointer', textDecoration: 'underline' }} onClick={onRequireLogin}>đăng nhập</span> để bảo vệ số dư tài khoản lâu dài)
+                </p>
               )}
             </div>
           </>
