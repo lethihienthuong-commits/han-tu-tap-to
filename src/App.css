@@ -659,8 +659,12 @@
   width: 200px;
 }
 
+.design-blueprint-group {
+  margin-left: 12px; /* Tạo khoảng cách rõ ràng tách biệt với tab Bố cục giấy */
+}
+
 .input-group:nth-child(7) .blueprint-input-wrap,
-.design-blueprint-group .blueprint-input-wrap { /* Bản thiết kế */
+.design-blueprint-group .blueprint-input-wrap { /* Số dòng có chữ */
   width: 250px;
   display: flex;
   align-items: center;
