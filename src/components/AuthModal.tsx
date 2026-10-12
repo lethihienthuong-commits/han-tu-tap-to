@@ -183,7 +183,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               ? 'Đang kết nối...'
               : tab === 'login'
               ? 'Đăng Nhập Ngay'
-              : 'Tạo Tài Khoản & Nhận 25 Credits'}
+              : 'Tạo Tài Khoản & Nhận 15 Credits'}
           </button>
         </form>
 
@@ -199,7 +199,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   setErrorMessage('')
                 }}
               >
-                Đăng ký nhận 25 Credits miễn phí
+                Đăng ký nhận 15 Credits miễn phí
               </button>
             </span>
           ) : (

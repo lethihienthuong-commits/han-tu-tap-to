@@ -51,9 +51,9 @@ export function getUserCredits(userId: string): number {
   if (saved !== null) {
     return parseInt(saved, 10)
   }
-  // Tài khoản mới đăng ký được tặng 25 credits
-  localStorage.setItem(`${USER_CREDITS_PREFIX}${userId}`, '25')
-  return 25
+  // Tài khoản mới đăng ký được tặng 15 credits
+  localStorage.setItem(`${USER_CREDITS_PREFIX}${userId}`, '15')
+  return 15
 }
 
 // Lưu số dư Credits cho tài khoản (Cập nhật Local + Cloud nếu có)

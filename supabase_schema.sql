@@ -4,7 +4,7 @@ create table if not exists public.profiles (
   email text,
   full_name text,
   avatar_url text,
-  credits integer default 25 check (credits >= 0),
+  credits integer default 15 check (credits >= 0),
   role text default 'user',
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
@@ -24,7 +24,7 @@ create policy "Users can update own profile name/avatar"
   on public.profiles for update
   using (auth.uid() = id);
 
--- 2. Tự động tạo profile và tặng 25 credits khi có người dùng mới đăng ký
+-- 2. Tự động tạo profile và tặng 15 credits khi có người dùng mới đăng ký
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
@@ -34,7 +34,7 @@ begin
     new.email,
     coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)),
     coalesce(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture', ''),
-    25
+    15
   )
   on conflict (id) do nothing;
   return new;
