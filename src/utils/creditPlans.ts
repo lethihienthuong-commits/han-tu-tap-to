@@ -60,7 +60,6 @@ export const CREDIT_PLANS: CreditPlan[] = [
       'Giá chạm đáy chỉ ~49 đồng / trang in',
       'Chèn Logo, Slogan & Hotline trung tâm',
       'Xuất trọn bộ nhiều tập sách lớn tới 1000 trang/file',
-      'Hỗ trợ ưu tiên và cập nhật mẫu mới',
     ],
   },
 ]
