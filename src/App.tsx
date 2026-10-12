@@ -41,6 +41,35 @@ function App() {
     return localStorage.getItem('han_tu_hide_welcome') !== 'true'
   })
 
+  // Phát hiện xem người dùng có đang mở web bên trong App Facebook / Zalo / Messenger không
+  const [isInAppBrowser, setIsInAppBrowser] = useState<boolean>(false)
+  const [showInAppBanner, setShowInAppBanner] = useState<boolean>(true)
+
+  useEffect(() => {
+    const ua = navigator.userAgent || ''
+    const inApp = /FBAN|FBAV|Instagram|Line|musical_ly|ByteLocale|Snapchat|MicroMessenger|Zalo/i.test(ua)
+    setIsInAppBrowser(inApp)
+  }, [])
+
+  // Xử lý mở web sang trình duyệt ngoài (Chrome / Safari)
+  const handleOpenExternalBrowser = () => {
+    const currentUrl = window.location.href
+    const ua = navigator.userAgent || ''
+    const isAndroid = /Android/i.test(ua)
+
+    if (isAndroid) {
+      // Android Intent: Tự động đánh thức Google Chrome ngoài
+      const cleanUrl = currentUrl.replace(/^https?:\/\//, '')
+      const intentUrl = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`
+      window.location.href = intentUrl
+    } else {
+      // iOS / Khác: Hướng dẫn người dùng bấm vào biểu tượng dấu 3 chấm
+      alert(
+        '👉 HƯỚNG DẪN MỞ BẰNG SAFARI / CHROME:\n\n1. Nhìn lên góc trên bên phải màn hình (hoặc góc dưới cùng).\n2. Bấm vào biểu tượng dấu 3 chấm (⋯ hoặc ⋮) hoặc nút Chia sẻ.\n3. Chọn "Mở trong trình duyệt hệ thống" (Open in Safari / Chrome) để tải file Word và sử dụng mượt mà nhất nhé!'
+      )
+    }
+  }
+
   // Đồng bộ credits từ Cloud khi mở web hoặc khi user thay đổi
   useEffect(() => {
     if (currentUser?.id) {
@@ -494,6 +523,36 @@ function App() {
 
   return (
     <div className="app-container">
+      {/* Banner thông báo & nút mở bằng trình duyệt ngoài khi dùng từ Facebook / Zalo */}
+      {isInAppBrowser && showInAppBanner && (
+        <div className="in-app-browser-banner no-print">
+          <div className="in-app-banner-content">
+            <span className="in-app-icon">🌐</span>
+            <div className="in-app-text">
+              <strong>Bạn đang mở từ Facebook / Zalo:</strong>
+              <span> Để tải file Word và dùng đầy đủ tính năng, vui lòng mở bằng trình duyệt máy.</span>
+            </div>
+          </div>
+          <div className="in-app-banner-actions">
+            <button
+              type="button"
+              className="btn-open-browser"
+              onClick={handleOpenExternalBrowser}
+            >
+              Mở bằng Trình Duyệt ↗
+            </button>
+            <button
+              type="button"
+              className="btn-close-banner"
+              onClick={() => setShowInAppBanner(false)}
+              aria-label="Đóng banner"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Thanh điều khiển trên cùng (ẩn khi in giấy) */}
       <header className="control-panel no-print">
         <div className="panel-brand">
