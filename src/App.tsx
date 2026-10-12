@@ -142,14 +142,7 @@ function App() {
       const hanziList = extracted.match(/[\p{Script=Han}]/gu) || []
 
       if (hanziList.length === 0) {
-        // Kiểm tra xem file có phải dạng PDF scan (chỉ chứa hình ảnh, không có lớp chữ số) hay không
-        if (extracted.trim().length === 0) {
-          alert(
-            `File PDF này là dạng TÀI LIỆU SCAN (hình ảnh chụp), không chứa văn bản kỹ thuật số nên trình duyệt không thể trích xuất chữ được.\n\n👉 Bạn vui lòng dùng file Word, Excel, hoặc file PDF có thể bôi đen copy chữ được nhé!`
-          )
-        } else {
-          alert(`Đã đọc xong file "${file.name}" nhưng không tìm thấy chữ Hán nào trong nội dung văn bản!`)
-        }
+        alert(`Đã đọc xong file "${file.name}" nhưng không tìm thấy chữ Hán nào trong nội dung văn bản!\n\n👉 Bạn vui lòng kiểm tra lại nội dung trong file Word / Excel nhé!`)
         setFileReadStatus('')
         return
       }
@@ -637,10 +630,10 @@ function App() {
               </span>
               <div className="vip-file-upload-wrap">
                 <label className="btn-vip-upload">
-                  {isReadingFile ? '⏳ Đang nạp file...' : '📁 Nạp File Word / Excel / PDF'}
+                  {isReadingFile ? '⏳ Đang nạp file...' : '📁 Nạp File Word (.docx) / Excel'}
                   <input
                     type="file"
-                    accept=".docx,.xlsx,.xls,.csv,.pdf,.txt"
+                    accept=".docx,.xlsx,.xls,.csv,.txt"
                     onChange={handleFileUpload}
                     disabled={isReadingFile}
                     style={{ display: 'none' }}
