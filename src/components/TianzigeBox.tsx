@@ -8,43 +8,49 @@ export interface FontOption {
   fontFamily: string
   docxFont: string
   desc: string
+  fontWeight?: number | string
 }
 
 export const FONT_OPTIONS: FontOption[] = [
   {
     id: 'yahei',
     name: 'Microsoft YaHei (Bút bi - Nét đều)',
-    fontFamily: '"Microsoft YaHei", "微软雅黑", "Noto Sans SC", sans-serif',
+    fontFamily: '"Noto Sans SC", "Microsoft YaHei", "微软雅黑", sans-serif',
     docxFont: 'Microsoft YaHei',
     desc: 'Nét đều, dễ tô bằng bút bi / bút mực',
+    fontWeight: 400,
   },
   {
     id: 'kaiti',
     name: 'KaiTi (Khải thư - Chuẩn luyện viết)',
-    fontFamily: '"LXGW WenKai", "KaiTi", "STKaiti", "Kaiti SC", "楷体", "Ma Shan Zheng", serif',
+    fontFamily: '"LXGW WenKai TC", "LXGW WenKai", "Ma Shan Zheng", "KaiTi", "STKaiti", "Kaiti SC", "楷体", serif',
     docxFont: 'KaiTi',
     desc: 'Nét bút khải thư chuẩn mực để luyện viết',
+    fontWeight: 400,
   },
   {
     id: 'simhei',
     name: 'SimHei (Hắc thể - Nét đậm)',
-    fontFamily: '"SimHei", "黑体", "Noto Sans SC", sans-serif',
+    fontFamily: '"Noto Sans SC", "SimHei", "黑体", sans-serif',
     docxFont: 'SimHei',
     desc: 'Nét dày, vuông vắn, rõ ràng',
+    fontWeight: 900,
   },
   {
     id: 'simsun',
     name: 'SimSun (Tống thể - Cổ điển)',
-    fontFamily: '"SimSun", "宋体", "Noto Serif SC", serif',
+    fontFamily: '"Noto Serif SC", "SimSun", "宋体", serif',
     docxFont: 'SimSun',
     desc: 'Font sách in cổ điển có chân',
+    fontWeight: 400,
   },
   {
     id: 'fangsong',
     name: 'FangSong (Phảng Tống / Tiêu đài)',
-    fontFamily: '"FangSong", "仿宋", "ZCOOL XiaoWei", "Noto Serif SC", serif',
+    fontFamily: '"ZCOOL XiaoWei", "FangSong", "仿宋", "Noto Serif SC", serif',
     docxFont: 'FangSong',
     desc: 'Nét thanh mảnh, tao nhã',
+    fontWeight: 400,
   },
 ]
 
@@ -63,6 +69,7 @@ interface TianzigeBoxProps {
   gridColor?: string
   borderColor?: string
   fontFamily?: string
+  fontWeight?: number | string
   charSize?: CharSize
 }
 
@@ -72,6 +79,7 @@ export const TianzigeBox: React.FC<TianzigeBoxProps> = ({
   gridColor = '#94a3b8',
   borderColor = '#64748b',
   fontFamily = FONT_OPTIONS[0].fontFamily,
+  fontWeight = 400,
   charSize = 'medium',
 }) => {
   const fontSize = CHAR_SIZE_MAP[charSize].svgFontSize
@@ -149,7 +157,8 @@ export const TianzigeBox: React.FC<TianzigeBoxProps> = ({
             fill={charColor}
             fontSize={fontSize}
             fontFamily={fontFamily}
-            style={{ fontFamily }}
+            fontWeight={fontWeight}
+            style={{ fontFamily, fontWeight }}
           >
             {char}
           </text>

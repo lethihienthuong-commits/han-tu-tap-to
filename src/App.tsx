@@ -1154,7 +1154,10 @@ function App() {
                 <div className="sample-row">
                   <span
                     className="sample-char"
-                    style={{ fontFamily: currentFont.fontFamily }}
+                    style={{
+                      fontFamily: currentFont.fontFamily,
+                      fontWeight: currentFont.fontWeight || 'normal',
+                    }}
                   >
                     {previewItem.char}
                   </span>
@@ -1193,6 +1196,7 @@ function App() {
                   key={idx}
                   char={displayChar}
                   fontFamily={currentFont.fontFamily}
+                  fontWeight={currentFont.fontWeight}
                   charSize={charSize}
                 />
               )
