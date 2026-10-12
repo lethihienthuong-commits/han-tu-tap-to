@@ -719,7 +719,7 @@ function App() {
               </div>
             </div>
 
-            {/* 6. Cấu hình số dòng và số cột */}
+            {/* 6. Cấu hình số dòng và số cột (Đồng bộ chuẩn A4: 6x9, 10x14, 16x22) */}
             <div className="input-group grid-setup-group">
               <label>Bố cục giấy</label>
               <div className="row-col-inputs">
@@ -728,14 +728,19 @@ function App() {
                   onChange={(e) => {
                     const newRows = Number(e.target.value)
                     setRows(newRows)
-                    // Nếu số dòng có chữ vượt quá số dòng trang thì chỉnh lại
+                    // Tự động đồng bộ số cột tương ứng để ô luôn vuông vắn chuẩn Điền Tự Cách
+                    if (newRows === 9) setCols(6)
+                    else if (newRows === 14) setCols(10)
+                    else if (newRows === 22) setCols(16)
+
+                    // Nếu số dòng có chữ ở Bản thiết kế vượt quá số dòng trang mới thì tự động hạ xuống
                     if (charRowLimit > newRows) setCharRowLimit(newRows)
                   }}
                   aria-label="Số dòng"
                 >
-                  <option value={9}>9 dòng (Ô to)</option>
-                  <option value={14}>14 dòng (Ô vừa - Chuẩn A4)</option>
-                  <option value={22}>22 dòng (Ô nhỏ - Nhiều chữ)</option>
+                  <option value={9}>9 dòng</option>
+                  <option value={14}>14 dòng</option>
+                  <option value={22}>22 dòng</option>
                 </select>
                 <span className="divider">×</span>
                 <select
@@ -743,10 +748,14 @@ function App() {
                   onChange={(e) => {
                     const newCols = Number(e.target.value)
                     setCols(newCols)
-                    // Tự động gợi ý số dòng vuông vắn tương ứng với số cột
-                    if (newCols === 6) setRows(9)
-                    else if (newCols === 10) setRows(14)
-                    else if (newCols === 16) setRows(22)
+                    // Tự động đồng bộ số dòng tương ứng để ô luôn vuông vắn chuẩn Điền Tự Cách
+                    let matchedRows = rows
+                    if (newCols === 6) matchedRows = 9
+                    else if (newCols === 10) matchedRows = 14
+                    else if (newCols === 16) matchedRows = 22
+                    setRows(matchedRows)
+
+                    if (charRowLimit > matchedRows) setCharRowLimit(matchedRows)
                   }}
                   aria-label="Số cột"
                 >
