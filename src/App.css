@@ -668,6 +668,7 @@
 .input-group:nth-child(7),
 .design-blueprint-group { /* Số dòng có chữ */
   width: 200px;
+  margin-left: 18px; /* Tách thêm khoảng cách rõ nét với tab Bố cục giấy */
 }
 .design-blueprint-group .blueprint-input-wrap {
   width: 100%;
