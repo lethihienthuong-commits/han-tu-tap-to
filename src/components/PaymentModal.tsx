@@ -36,9 +36,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const totalPlanCredits = selectedPlan.credits + (selectedPlan.bonusCredits || 0)
 
   // Cấu hình ngân hàng nhận tiền
-  const BANK_BIN = (import.meta.env.VITE_SEPAY_BANK_BIN || '970407').toString().trim() // Mã ngân hàng Techcombank
-  const BANK_NAME = (import.meta.env.VITE_SEPAY_BANK_NAME || 'Techcombank').toString().trim()
-  const ACCOUNT_NO = (import.meta.env.VITE_SEPAY_ACCOUNT_NO || '19032752672024').toString().trim()
+  const BANK_BIN = (import.meta.env.VITE_SEPAY_BANK_BIN || '970432').toString().trim() // Mã ngân hàng VPBank
+  const BANK_NAME = (import.meta.env.VITE_SEPAY_BANK_NAME || 'VPBank').toString().trim()
+  const ACCOUNT_NO = (import.meta.env.VITE_SEPAY_ACCOUNT_NO || '0969246788').toString().trim()
   const ACCOUNT_NAME = (import.meta.env.VITE_SEPAY_ACCOUNT_NAME || 'LE THI HIEN THUONG').toString().trim()
 
   // Mã giao dịch thanh toán duy nhất (dùng để SePAY tự động nhận diện và cộng điểm)
@@ -210,7 +210,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     <div className="qr-image-wrap">
                       <img
                         src={qrUrl}
-                        alt="Mã QR thanh toán Techcombank"
+                        alt="Mã QR thanh toán VPBank"
                         className="qr-img"
                       />
                     </div>
@@ -218,7 +218,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     <div className="bank-info-table">
                       <div className="bank-row">
                         <span className="bank-label">Ngân hàng:</span>
-                        <span className="bank-value"><strong>{BANK_NAME}</strong> (Kỹ Thương Việt Nam)</span>
+                        <span className="bank-value"><strong>{BANK_NAME}</strong> (Việt Nam Thịnh Vượng)</span>
                       </div>
                       <div className="bank-row">
                         <span className="bank-label">Chủ tài khoản:</span>
