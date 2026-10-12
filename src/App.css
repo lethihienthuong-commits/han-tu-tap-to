@@ -87,6 +87,78 @@
   background: #15803d;
 }
 
+/* Nút đăng nhập trên thanh Header */
+.btn-login-header {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-login-header:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #2563eb;
+}
+
+/* Huy hiệu tài khoản người dùng đã đăng nhập */
+.user-profile-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 3px 8px 3px 4px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.user-avatar-circle {
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.user-name-text {
+  font-weight: 700;
+  color: #0f172a;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-logout-small {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.btn-logout-small:hover {
+  color: #ef4444;
+  background: #fee2e2;
+}
+
 .vip-badge-btn {
   background: linear-gradient(135deg, #f59e0b, #d97706);
   color: #ffffff;

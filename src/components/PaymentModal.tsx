@@ -11,6 +11,8 @@ interface PaymentModalProps {
   isOpen: boolean
   onClose: () => void
   currentCredits: number
+  currentUser: { name: string; email: string } | null
+  onRequireLogin: () => void
   onPaymentSuccess: (addedCredits: number, planName: string) => void
 }
 
@@ -18,6 +20,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   isOpen,
   onClose,
   currentCredits,
+  currentUser,
+  onRequireLogin,
   onPaymentSuccess,
 }) => {
   const [selectedPlan, setSelectedPlan] = useState<CreditPlan>(CREDIT_PLANS[1]) // Mặc định gói Giáo Viên
@@ -111,13 +115,28 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             </div>
 
             <div className="modal-footer-action">
-              <button
-                type="button"
-                className="btn-proceed-checkout"
-                onClick={() => setStep('checkout')}
-              >
-                Tiếp tục thanh toán {selectedPlan.priceDisplay} ({totalPlanCredits} Credits) →
-              </button>
+              {!currentUser ? (
+                <div className="login-prompt-before-pay">
+                  <p>💡 Bạn cần đăng nhập tài khoản để lưu giữ số Credits đã nạp vĩnh viễn.</p>
+                  <button
+                    type="button"
+                    className="btn-proceed-checkout"
+                    onClick={() => {
+                      onRequireLogin()
+                    }}
+                  >
+                    🔑 Đăng Nhập Để Thanh Toán {selectedPlan.priceDisplay}
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="btn-proceed-checkout"
+                  onClick={() => setStep('checkout')}
+                >
+                  Tiếp tục thanh toán {selectedPlan.priceDisplay} ({totalPlanCredits} Credits) →
+                </button>
+              )}
             </div>
           </>
         )}

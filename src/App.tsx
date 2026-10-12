@@ -9,20 +9,55 @@ import { exportToWord } from './utils/exportDocx'
 import { searchHanziByPinyin, type HanziCandidate } from './utils/pinyinSearch'
 import { extractTextFromFile } from './utils/fileExtractor'
 import { PaymentModal } from './components/PaymentModal'
+import { AuthModal } from './components/AuthModal'
+import {
+  type AuthUser,
+  getCurrentUser,
+  getUserCredits,
+  saveUserCredits,
+  logoutUser,
+} from './utils/authService'
 import './App.css'
 
 function App() {
-  // Quản lý Credits nạp tiền (Lưu trữ cục bộ cho người dùng, mặc định tặng 20 credits dùng thử)
+  // Quản lý tài khoản người dùng
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => getCurrentUser())
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false)
+
+  // Quản lý Credits nạp tiền (Liên kết theo ID tài khoản hoặc lưu tạm cho khách dùng thử)
   const [userCredits, setUserCredits] = useState<number>(() => {
-    const saved = localStorage.getItem('user_credits')
-    return saved !== null ? parseInt(saved, 10) : 25 // Tặng 25 credits khởi đầu
+    const user = getCurrentUser()
+    if (user) {
+      return getUserCredits(user.id)
+    }
+    const guestCredits = localStorage.getItem('han_tu_guest_credits')
+    return guestCredits !== null ? parseInt(guestCredits, 10) : 10 // Khách chưa đăng nhập có 10 credits thử
   })
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false)
 
-  // Cập nhật credits và lưu vào localStorage
+  // Cập nhật credits
   const updateCredits = (newAmount: number) => {
     setUserCredits(newAmount)
-    localStorage.setItem('user_credits', newAmount.toString())
+    if (currentUser) {
+      saveUserCredits(currentUser.id, newAmount)
+    } else {
+      localStorage.setItem('han_tu_guest_credits', newAmount.toString())
+    }
+  }
+
+  // Khi đăng nhập thành công
+  const handleLoginSuccess = (user: AuthUser) => {
+    setCurrentUser(user)
+    const credits = getUserCredits(user.id)
+    setUserCredits(credits)
+  }
+
+  // Khi đăng xuất
+  const handleLogout = () => {
+    logoutUser()
+    setCurrentUser(null)
+    const guestCredits = localStorage.getItem('han_tu_guest_credits')
+    setUserCredits(guestCredits !== null ? parseInt(guestCredits, 10) : 10)
   }
 
   // Khi nạp tiền thành công
@@ -357,6 +392,33 @@ function App() {
               >
                 {showVipPanel ? '🏢 Ẩn ô Thương hiệu' : '🏢 Chỉnh sửa Thương hiệu'}
               </button>
+
+              {/* Khu vực đăng nhập / Tài khoản người dùng */}
+              {currentUser ? (
+                <div className="user-profile-badge" title={`Đang đăng nhập: ${currentUser.email}`}>
+                  <span className="user-avatar-circle">
+                    {currentUser.name.charAt(0).toUpperCase()}
+                  </span>
+                  <span className="user-name-text">{currentUser.name}</span>
+                  <button
+                    type="button"
+                    className="btn-logout-small"
+                    onClick={handleLogout}
+                    title="Đăng xuất khỏi tài khoản này"
+                  >
+                    Thoát
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="btn-login-header"
+                  onClick={() => setIsAuthModalOpen(true)}
+                  title="Đăng nhập để lưu số dư và bảo vệ tài khoản"
+                >
+                  👤 Đăng Nhập
+                </button>
+              )}
             </div>
             <p className="subtitle">
               Tạo trang tập tô chữ Hán chuẩn A4 • Hỗ trợ xuất trọn bộ cả quyển vở & Chèn thương hiệu trung tâm
@@ -914,7 +976,19 @@ function App() {
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         currentCredits={userCredits}
+        currentUser={currentUser}
+        onRequireLogin={() => {
+          setIsPaymentModalOpen(false)
+          setIsAuthModalOpen(true)
+        }}
         onPaymentSuccess={handlePaymentSuccess}
+      />
+
+      {/* Modal đăng nhập / đăng ký tài khoản */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
       />
     </div>
   )
