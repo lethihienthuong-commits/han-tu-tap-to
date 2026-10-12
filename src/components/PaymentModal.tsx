@@ -24,7 +24,16 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   onRequireLogin,
   onPaymentSuccess,
 }) => {
-  const [selectedPlan, setSelectedPlan] = useState<CreditPlan>(CREDIT_PLANS[1]) // Mặc định gói Giáo Viên
+  const defaultPlan = CREDIT_PLANS && CREDIT_PLANS.length > 1 ? CREDIT_PLANS[1] : (CREDIT_PLANS[0] || {
+    id: 'plan_teacher',
+    name: 'Gói Giáo Viên',
+    price: 99000,
+    priceDisplay: '99.000 đ',
+    credits: 1200,
+    bonusCredits: 300,
+  })
+
+  const [selectedPlan, setSelectedPlan] = useState<CreditPlan>(defaultPlan)
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodType>('vietqr')
   const [step, setStep] = useState<'select' | 'checkout' | 'success'>('select')
   const [isProcessing, setIsProcessing] = useState<boolean>(false)
@@ -32,27 +41,21 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
   if (!isOpen) return null
 
+  // Cấu hình ngân hàng nhận tiền an toàn tuyệt đối
+  const BANK_BIN = '970432'
+  const BANK_NAME = 'VPBank'
+  const ACCOUNT_NO = '0969246788'
+  const ACCOUNT_NAME = 'LE THI HIEN THUONG'
+
   // Tổng số credits nhận được từ gói
-  const totalPlanCredits = selectedPlan.credits + (selectedPlan.bonusCredits || 0)
+  const currentPlan = selectedPlan || defaultPlan
+  const totalPlanCredits = (currentPlan.credits || 1000) + (currentPlan.bonusCredits || 0)
 
-  // Cấu hình ngân hàng nhận tiền
-  const BANK_BIN = (import.meta.env.VITE_SEPAY_BANK_BIN || '970432').toString().trim() // Mã ngân hàng VPBank
-  const BANK_NAME = (import.meta.env.VITE_SEPAY_BANK_NAME || 'VPBank').toString().trim()
-  const ACCOUNT_NO = (import.meta.env.VITE_SEPAY_ACCOUNT_NO || '0969246788').toString().trim()
-  const ACCOUNT_NAME = (import.meta.env.VITE_SEPAY_ACCOUNT_NAME || 'LE THI HIEN THUONG').toString().trim()
-
-  // Mã giao dịch thanh toán duy nhất (dùng để SePAY tự động nhận diện và cộng điểm)
-  const [transactionCode] = useState<string>(() => {
-    try {
-      const userPrefix = currentUser && currentUser.email ? currentUser.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '').slice(0, 4).toUpperCase() : 'HT'
-      return `${userPrefix || 'HT'}${Math.floor(100000 + Math.random() * 900000)}`
-    } catch {
-      return `HT${Math.floor(100000 + Math.random() * 900000)}`
-    }
-  })
+  // Mã giao dịch thanh toán duy nhất
+  const transactionCode = 'HT' + Math.floor(100000 + (Math.random() * 900000))
 
   // Tạo URL mã VietQR chuẩn liên ngân hàng NAPAS
-  const planPrice = selectedPlan?.price || 99000
+  const planPrice = currentPlan.price || 99000
   const qrUrl = `https://api.vietqr.io/image/${BANK_BIN}-${ACCOUNT_NO}-compact.jpg?amount=${planPrice}&addInfo=${transactionCode}&accountName=${encodeURIComponent(
     ACCOUNT_NAME
   )}`
