@@ -177,24 +177,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               {isLoading ? 'Đang kết nối...' : 'Chọn tài khoản Google trên máy'}
             </button>
 
-            <button
-              type="button"
-              className="btn-google-login"
-              style={{ marginTop: '10px', background: '#eff6ff', borderColor: '#bfdbfe', color: '#1d4ed8' }}
-              onClick={() => {
-                const inputEmail = window.prompt('NHẬN MÃ CODE XÁC THỰC VỀ EMAIL:\n\nNhập địa chỉ Email của bạn:', email || '')
-                if (inputEmail && inputEmail.trim()) {
-                  setEmail(inputEmail.trim())
-                  handleSendOtp(inputEmail.trim())
-                }
-              }}
-              disabled={isLoading}
-            >
-              ✉️ Gửi mã xác thực 4 số về Email (Không cần mật khẩu)
-            </button>
-
             <div className="auth-divider">
-              <span>hoặc đăng nhập bằng Mật khẩu</span>
+              <span>hoặc đăng nhập bằng Email / Mật khẩu</span>
             </div>
           </>
         )}
