@@ -85,9 +85,9 @@ function App() {
   const [charRowLimit, setCharRowLimit] = useState<number>(0)
 
   // --- TÍNH NĂNG VIP 1: Nhập nhiều chữ / Danh sách từ vựng ---
-  const [isVipMode, setIsVipMode] = useState<boolean>(true) // Bật sẵn chế độ trải nghiệm thử
+  const [isVipMode] = useState<boolean>(true) // Bật sẵn chế độ tạo sách nhiều chữ
   const [batchText, setBatchText] = useState<string>('学中文很快乐')
-  const [showVipPanel, setShowVipPanel] = useState<boolean>(true) // Mở sẵn bảng chỉnh sửa thương hiệu
+  const [showVipPanel, setShowVipPanel] = useState<boolean>(false) // Mặc định ẩn ô thương hiệu, bấm nút để mở khi cần
   const [activePageIndex, setActivePageIndex] = useState<number>(0)
   const [isReadingFile, setIsReadingFile] = useState<boolean>(false)
   const [fileReadStatus, setFileReadStatus] = useState<string>('')
@@ -386,11 +386,8 @@ function App() {
               </div>
               <button
                 type="button"
-                className={`vip-badge-btn ${isVipMode ? 'active' : ''}`}
-                onClick={() => {
-                  setShowVipPanel(!showVipPanel)
-                  setIsVipMode(true)
-                }}
+                className={`vip-badge-btn ${showVipPanel ? 'active' : ''}`}
+                onClick={() => setShowVipPanel(!showVipPanel)}
                 title="Bấm để ẩn / hiện ô Chỉnh sửa Thương hiệu trung tâm"
               >
                 {showVipPanel ? '🏢 Ẩn ô Thương hiệu' : '🏢 Chỉnh sửa Thương hiệu'}
