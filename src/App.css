@@ -31,18 +31,33 @@
   display: flex;
   align-items: center;
   gap: 14px;
+  min-width: 0;
 }
 
 .brand-right-actions {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-left: auto;
-  flex-wrap: wrap;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
 }
 
 .brand-text-wrap {
-  flex: 1;
+  min-width: 0;
+}
+
+.brand-text-wrap h1 {
+  white-space: nowrap;
+}
+
+.brand-text-wrap .subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 3px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 580px;
 }
 
 /* Huy hiệu Credits & Nút nạp */
