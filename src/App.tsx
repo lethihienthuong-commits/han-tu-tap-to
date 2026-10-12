@@ -236,6 +236,36 @@ function App() {
     }
   }
 
+  // Loại bỏ các chữ bị trùng lặp trong đoạn văn (chỉ giữ lại lần xuất hiện đầu tiên của mỗi chữ)
+  const handleRemoveDuplicates = () => {
+    if (!batchText.trim()) return
+    const hanziChars = batchText.match(/[\p{Script=Han}]/gu) || []
+    if (hanziChars.length === 0) return
+
+    const seen = new Set<string>()
+    const uniqueChars: string[] = []
+    let duplicateCount = 0
+
+    for (const ch of hanziChars) {
+      if (!seen.has(ch)) {
+        seen.add(ch)
+        uniqueChars.push(ch)
+      } else {
+        duplicateCount++
+      }
+    }
+
+    if (duplicateCount === 0) {
+      alert('Tuyệt vời! Đoạn văn hiện tại không có chữ Hán nào bị trùng lặp.')
+      return
+    }
+
+    setBatchText(uniqueChars.join(''))
+    setExcludedIndices(new Set())
+    setActivePageIndex(0)
+    alert(`Đã loại bỏ thành công ${duplicateCount} chữ bị trùng lặp! Cuốn vở hiện có ${uniqueChars.length} chữ duy nhất.`)
+  }
+
   // Quản lý kéo thả sắp xếp lại thứ tự chữ
   const [draggedChipIndex, setDraggedChipIndex] = useState<number | null>(null)
   const [dragOverChipIndex, setDragOverChipIndex] = useState<number | null>(null)
@@ -617,6 +647,14 @@ function App() {
                   />
                 </label>
               </div>
+              <button
+                type="button"
+                className="btn-vip-dedup"
+                onClick={handleRemoveDuplicates}
+                title="Tự động lọc và loại bỏ tất cả các chữ Hán bị lặp lại trong văn bản"
+              >
+                ✨ Lọc bỏ chữ trùng lặp
+              </button>
               <button
                 type="button"
                 className="btn-vip-sample"
