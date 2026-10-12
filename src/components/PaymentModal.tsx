@@ -35,8 +35,22 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   // Tổng số credits nhận được từ gói
   const totalPlanCredits = selectedPlan.credits + (selectedPlan.bonusCredits || 0)
 
-  // Mã giao dịch mô phỏng
-  const transactionCode = `HT${Math.floor(100000 + Math.random() * 900000)}`
+  // Cấu hình ngân hàng nhận tiền
+  const BANK_BIN = import.meta.env.VITE_SEPAY_BANK_BIN || '970407' // Mã ngân hàng Techcombank
+  const BANK_NAME = import.meta.env.VITE_SEPAY_BANK_NAME || 'Techcombank'
+  const ACCOUNT_NO = import.meta.env.VITE_SEPAY_ACCOUNT_NO || '19032752672024'
+  const ACCOUNT_NAME = import.meta.env.VITE_SEPAY_ACCOUNT_NAME || 'LE THI HIEN THUONG'
+
+  // Mã giao dịch thanh toán duy nhất (dùng để SePAY tự động nhận diện và cộng điểm)
+  const [transactionCode] = useState<string>(() => {
+    const userPrefix = currentUser ? currentUser.email.split('@')[0].slice(0, 4).toUpperCase() : 'HT'
+    return `${userPrefix}${Math.floor(100000 + Math.random() * 900000)}`
+  })
+
+  // Tạo URL mã VietQR chuẩn liên ngân hàng NAPAS
+  const qrUrl = `https://api.vietqr.io/image/${BANK_BIN}-${ACCOUNT_NO}-compact.jpg?amount=${selectedPlan.price}&addInfo=${transactionCode}&accountName=${encodeURIComponent(
+    ACCOUNT_NAME
+  )}`
 
   // Xử lý sao chép thông tin
   const handleCopy = (text: string, field: string) => {
@@ -200,34 +214,29 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     <div className="qr-title">Quét mã VietQR bằng App Ngân Hàng</div>
                     <div className="qr-image-wrap">
                       <img
-                        src={`https://api.vietqr.io/image/970422-0988666888-qrx.jpg?amount=${selectedPlan.price}&addInfo=${transactionCode}&accountName=TRUNG%20TAM%20HOA%20NGU`}
-                        alt="Mã QR thanh toán ngân hàng"
+                        src={qrUrl}
+                        alt="Mã QR thanh toán Techcombank"
                         className="qr-img"
-                        onError={(e) => {
-                          // Ảnh dự phòng nếu API bên ngoài không phản hồi
-                          ;(e.target as HTMLElement).style.display = 'none'
-                        }}
                       />
-                      <div className="qr-fallback-info">
-                        <div className="qr-fake-visual">
-                          <span>📱 Mã QR Đã Tạo Sẵn</span>
-                        </div>
-                      </div>
                     </div>
 
                     <div className="bank-info-table">
                       <div className="bank-row">
                         <span className="bank-label">Ngân hàng:</span>
-                        <span className="bank-value">MB Bank (Quân Đội)</span>
+                        <span className="bank-value"><strong>{BANK_NAME}</strong> (Kỹ Thương Việt Nam)</span>
+                      </div>
+                      <div className="bank-row">
+                        <span className="bank-label">Chủ tài khoản:</span>
+                        <span className="bank-value"><strong>{ACCOUNT_NAME}</strong></span>
                       </div>
                       <div className="bank-row">
                         <span className="bank-label">Số tài khoản:</span>
                         <span className="bank-value highlight">
-                          0988666888
+                          {ACCOUNT_NO}
                           <button
                             type="button"
                             className="btn-copy"
-                            onClick={() => handleCopy('0988666888', 'stk')}
+                            onClick={() => handleCopy(ACCOUNT_NO, 'stk')}
                           >
                             {copiedField === 'stk' ? '✓ Đã chép' : 'Sao chép'}
                           </button>
