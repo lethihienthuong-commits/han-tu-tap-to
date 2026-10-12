@@ -515,8 +515,33 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-.batch-chip:active .chip-drag-handle {
-  cursor: grabbing;
+.chip-arrow-btn {
+  background: transparent;
+  border: none;
+  font-size: 9px;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 1px 3px;
+  border-radius: 3px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.chip-arrow-btn:hover {
+  background: #f1f5f9;
+  color: #2563eb;
+}
+
+.batch-chip.active .chip-arrow-btn {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.batch-chip.active .chip-arrow-btn:hover {
+  background: rgba(0, 0, 0, 0.2);
+  color: #ffffff;
 }
 
 .batch-chip.dragging {

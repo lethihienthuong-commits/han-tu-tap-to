@@ -240,6 +240,19 @@ function App() {
   const [draggedChipIndex, setDraggedChipIndex] = useState<number | null>(null)
   const [dragOverChipIndex, setDragOverChipIndex] = useState<number | null>(null)
 
+  // Di chuyển chữ sang trái hoặc sang phải 1 vị trí
+  const handleMoveChip = (fromIdx: number, toIdx: number, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation()
+    const hanziChars = batchText.match(/[\p{Script=Han}]/gu) || []
+    if (fromIdx < 0 || fromIdx >= hanziChars.length || toIdx < 0 || toIdx >= hanziChars.length) return
+
+    const updatedChars = [...hanziChars]
+    const [movedChar] = updatedChars.splice(fromIdx, 1)
+    updatedChars.splice(toIdx, 0, movedChar)
+    setBatchText(updatedChars.join(''))
+    setActivePageIndex(toIdx)
+  }
+
   const handleChipDragStart = (idx: number, e: React.DragEvent) => {
     setDraggedChipIndex(idx)
     e.dataTransfer.effectAllowed = 'move'
@@ -248,6 +261,7 @@ function App() {
 
   const handleChipDragOver = (idx: number, e: React.DragEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     e.dataTransfer.dropEffect = 'move'
     if (dragOverChipIndex !== idx) {
       setDragOverChipIndex(idx)
@@ -256,22 +270,22 @@ function App() {
 
   const handleChipDrop = (targetIdx: number, e: React.DragEvent) => {
     e.preventDefault()
-    if (draggedChipIndex === null || draggedChipIndex === targetIdx) {
+    e.stopPropagation()
+
+    // Lấy chỉ số nguồn từ state hoặc từ dataTransfer
+    let sourceIdx = draggedChipIndex
+    const textData = e.dataTransfer.getData('text/plain')
+    if (textData !== '' && !isNaN(Number(textData))) {
+      sourceIdx = Number(textData)
+    }
+
+    if (sourceIdx === null || sourceIdx === targetIdx) {
       setDraggedChipIndex(null)
       setDragOverChipIndex(null)
       return
     }
 
-    // Hoán đổi hoặc di chuyển thứ tự chữ trong batchText
-    const hanziChars = batchText.match(/[\p{Script=Han}]/gu) || []
-    if (draggedChipIndex < hanziChars.length && targetIdx < hanziChars.length) {
-      const updatedChars = [...hanziChars]
-      const [movedChar] = updatedChars.splice(draggedChipIndex, 1)
-      updatedChars.splice(targetIdx, 0, movedChar)
-      setBatchText(updatedChars.join(''))
-      setActivePageIndex(targetIdx)
-    }
-
+    handleMoveChip(sourceIdx, targetIdx)
     setDraggedChipIndex(null)
     setDragOverChipIndex(null)
   }
@@ -699,8 +713,28 @@ function App() {
                       }
                     >
                       <span className="chip-drag-handle" title="Kéo để đổi thứ tự">⋮⋮</span>
+                      {idx > 0 && (
+                        <button
+                          type="button"
+                          className="chip-arrow-btn"
+                          onClick={(e) => handleMoveChip(idx, idx - 1, e)}
+                          title="Chuyển sang trước"
+                        >
+                          ◀
+                        </button>
+                      )}
                       <span className="chip-char">{item.char}</span>
                       <span className="chip-pinyin">{item.pinyin}</span>
+                      {idx < parsedBatchItems.length - 1 && (
+                        <button
+                          type="button"
+                          className="chip-arrow-btn"
+                          onClick={(e) => handleMoveChip(idx, idx + 1, e)}
+                          title="Chuyển ra sau"
+                        >
+                          ▶
+                        </button>
+                      )}
                       <button
                         type="button"
                         className="chip-remove-btn"
