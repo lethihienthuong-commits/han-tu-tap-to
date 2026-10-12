@@ -653,16 +653,6 @@ function App() {
               >
                 ✨ Lọc bỏ chữ trùng lặp
               </button>
-              <button
-                type="button"
-                className="btn-vip-sample"
-                onClick={() => {
-                  setBatchText('学中文很快乐，每天进步一点点')
-                  setExcludedIndices(new Set())
-                }}
-              >
-                Điền mẫu ví dụ
-              </button>
               {excludedIndices.size > 0 && (
                 <button
                   type="button"
