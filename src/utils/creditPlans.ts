@@ -64,7 +64,7 @@ export const CREDIT_PLANS: CreditPlan[] = [
   },
 ]
 
-export type PaymentMethodType = 'vietqr' | 'momo' | 'vnpay' | 'card'
+export type PaymentMethodType = 'vietqr' | 'card'
 
 export interface PaymentMethod {
   id: PaymentMethodType
@@ -83,22 +83,10 @@ export const PAYMENT_METHODS: PaymentMethod[] = [
     description: 'Quét mã qua mọi ứng dụng ngân hàng (Vietcombank, MB, Techcombank...)',
   },
   {
-    id: 'momo',
-    name: 'Ví MoMo',
-    icon: '👛',
-    badge: 'Phổ biến',
-    description: 'Quét mã thanh toán trực tiếp từ ứng dụng ví MoMo',
-  },
-  {
-    id: 'vnpay',
-    name: 'VNPAY-QR',
-    icon: '💳',
-    description: 'Thanh toán qua cổng VNPAY hỗ trợ hơn 40 ngân hàng',
-  },
-  {
     id: 'card',
     name: 'Thẻ Quốc tế (Visa / Master)',
     icon: '🌐',
     description: 'Thanh toán tiện lợi bằng thẻ tín dụng hoặc ghi nợ quốc tế',
   },
 ]
+

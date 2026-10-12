@@ -263,46 +263,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   </div>
                 )}
 
-                {selectedMethod === 'momo' && (
-                  <div className="momo-payment-box">
-                    <div className="qr-title">Thanh toán qua Ví MoMo</div>
-                    <div className="momo-card-preview">
-                      <div className="momo-logo">Ví MoMo</div>
-                      <p>Mở ứng dụng MoMo trên điện thoại để quét mã hoặc chuyển đến:</p>
-                      <div className="bank-row">
-                        <span className="bank-label">SĐT MoMo:</span>
-                        <span className="bank-value highlight">
-                          0988.666.888
-                          <button
-                            type="button"
-                            className="btn-copy"
-                            onClick={() => handleCopy('0988666888', 'momo')}
-                          >
-                            {copiedField === 'momo' ? '✓ Đã chép' : 'Sao chép'}
-                          </button>
-                        </span>
-                      </div>
-                      <div className="bank-row">
-                        <span className="bank-label">Lời nhắn:</span>
-                        <span className="bank-value highlight">{transactionCode}</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {selectedMethod === 'vnpay' && (
-                  <div className="vnpay-box">
-                    <div className="qr-title">Cổng Thanh Toán VNPAY-QR</div>
-                    <div className="vnpay-banner">
-                      <span className="vnpay-logo-text">VNPAY-QR</span>
-                      <p>Hỗ trợ quét qua hơn 40 ứng dụng ngân hàng và ví điện tử</p>
-                    </div>
-                    <div className="vnpay-instructions">
-                      Sau khi nhấn xác nhận, hệ thống sẽ kết nối với cổng VNPAY để bạn quét mã QR trực tiếp.
-                    </div>
-                  </div>
-                )}
-
                 {selectedMethod === 'card' && (
                   <div className="card-box">
                     <div className="qr-title">Thanh toán thẻ Quốc tế (Visa / Mastercard)</div>
