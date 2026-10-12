@@ -341,7 +341,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     )}
                   </button>
                   <p className="payment-note">
-                    🔒 Hệ thống cộng Credits tự động sau khi giao dịch thành công. Nếu cần hỗ trợ nhanh, gọi Hotline 0988.666.888.
+                    🔒 Hệ thống cộng Credits tự động sau khi giao dịch thành công. Nếu cần hỗ trợ hoặc báo lỗi, liên hệ Hotline / Zalo: <strong>0969246788 (có Zalo)</strong>.
                   </p>
                 </div>
               </div>

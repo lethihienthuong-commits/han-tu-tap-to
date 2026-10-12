@@ -1321,3 +1321,18 @@
     padding: 16px;
   }
 }
+
+/* Footer chân trang website */
+.app-global-footer {
+  text-align: center;
+  padding: 18px 24px;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: auto;
+}
+
+.app-global-footer strong {
+  color: #0f172a;
+}

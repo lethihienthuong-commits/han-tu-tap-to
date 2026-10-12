@@ -1156,9 +1156,13 @@ function App() {
           <div className="sheet-footer">
             <span>Hán Tự Tập Tô • Khổ A4</span>
             <span>Họ và tên: ............................................ Ngày: ...../...../202...</span>
-          </div>
         </div>
       </main>
+
+      {/* Footer website hiển thị Hotline hỗ trợ & báo lỗi */}
+      <footer className="app-global-footer no-print">
+        <span>💬 Hotline báo lỗi & hỗ trợ kỹ thuật: <strong>0969246788 (có zalo)</strong> • Hán Tự Tập Tô</span>
+      </footer>
 
       {/* Modal nạp tiền Credits VIP */}
       <PaymentModal
