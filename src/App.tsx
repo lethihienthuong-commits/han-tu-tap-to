@@ -766,10 +766,10 @@ function App() {
               </div>
             </div>
 
-            {/* 7. Tab Bản thiết kế: Cho phép điền số dòng có chữ, không vượt quá tổng số dòng */}
+            {/* 7. Tab Số dòng có chữ: Cho phép điền số dòng có chữ, không vượt quá tổng số dòng */}
             <div className="input-group design-blueprint-group">
               <label htmlFor="blueprintRowsInput" title="Nhập số dòng có chữ mẫu, các dòng còn lại là ô kẻ trống">
-                Bản thiết kế (Số dòng có chữ)
+                Số dòng có chữ
               </label>
               <div className="blueprint-input-wrap">
                 <input
