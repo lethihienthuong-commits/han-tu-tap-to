@@ -630,7 +630,7 @@ function App() {
               </span>
               <div className="vip-file-upload-wrap">
                 <label className="btn-vip-upload">
-                  {isReadingFile ? '⏳ Đang nạp file...' : '📁 Nạp File Word (.docx) / Excel'}
+                  {isReadingFile ? '⏳ Đang nạp file...' : '📁 Tải file word/excel'}
                   <input
                     type="file"
                     accept=".docx,.xlsx,.xls,.csv,.txt"
