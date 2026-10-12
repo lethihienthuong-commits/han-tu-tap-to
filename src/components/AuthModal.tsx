@@ -20,11 +20,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onClose,
   onLoginSuccess,
 }) => {
-  const [tab, setTab] = useState<'login' | 'register' | 'otp'>('login')
+  const [tab, setTab] = useState<'login' | 'otp'>('login')
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const [name, setName] = useState<string>('')
   const [otpCode, setOtpCode] = useState<string>('')
+  const [usePassword, setUsePassword] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [successNotice, setSuccessNotice] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -50,7 +50,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   // 1. Gửi mã xác thực về Email
   const handleSendOtp = async (targetEmail: string) => {
     if (!targetEmail.trim() || !targetEmail.includes('@')) {
-      setErrorMessage('Vui lòng nhập địa chỉ Email hợp lệ để nhận mã xác thực!')
+      setErrorMessage('Vui lòng nhập địa chỉ Email hợp lệ!')
       return
     }
 
@@ -61,7 +61,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       if (res.error) {
         setErrorMessage(res.error)
       } else {
-        setSuccessNotice(`Mã xác thực đã được gửi về hộp thư: ${targetEmail}. Vui lòng kiểm tra email và nhập mã bên dưới.`)
+        setSuccessNotice(`Mã xác thực đã được gửi về: ${targetEmail}. Vui lòng kiểm tra email và nhập mã bên dưới.`)
         setTab('otp')
       }
     } finally {
@@ -92,8 +92,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
   }
 
-  // Đăng nhập / Đăng ký bằng Email & Mật khẩu vào Supabase Cloud
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Đăng nhập bằng Email & Mật khẩu vào Supabase Cloud
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email.trim() || !password.trim()) {
       setErrorMessage('Vui lòng điền đầy đủ Email và Mật khẩu!')
@@ -103,26 +103,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setIsLoading(true)
     setErrorMessage('')
     try {
-      if (tab === 'register') {
-        const res = await signUpWithEmail(email, password, name)
-        if (res.error) {
-          setErrorMessage(res.error)
-          return
+      const res = await signInWithEmail(email, password)
+      if (res.error) {
+        // Nếu tài khoản chưa có mật khẩu, tự động đăng ký mới luôn
+        if (res.error.toLowerCase().includes('invalid login') || res.error.toLowerCase().includes('not found')) {
+          const regRes = await signUpWithEmail(email, password)
+          if (regRes.error) {
+            setErrorMessage(res.error)
+            return
+          }
+          if (regRes.user) {
+            onLoginSuccess(regRes.user)
+            onClose()
+            return
+          }
         }
-        if (res.user) {
-          onLoginSuccess(res.user)
-          onClose()
-        }
-      } else {
-        const res = await signInWithEmail(email, password)
-        if (res.error) {
-          setErrorMessage(res.error)
-          return
-        }
-        if (res.user) {
-          onLoginSuccess(res.user)
-          onClose()
-        }
+        setErrorMessage(res.error)
+        return
+      }
+      if (res.user) {
+        onLoginSuccess(res.user)
+        onClose()
       }
     } finally {
       setIsLoading(false)
@@ -139,24 +140,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         <div className="auth-header">
           <div className="auth-logo-badge">漢</div>
           <h2>
-            {tab === 'otp'
-              ? 'Xác Thực Mã Email'
-              : tab === 'login'
-              ? 'Đăng Nhập Tài Khoản'
-              : 'Tạo Tài Khoản Mới'}
+            {tab === 'otp' ? 'Xác Thực Mã Email' : 'Đăng Nhập / Tiếp Tục'}
           </h2>
           <p className="auth-subtitle">
             {tab === 'otp'
-              ? 'Nhập mã xác thực đã gửi về hòm thư để hoàn tất đăng nhập'
-              : 'Đăng nhập để quản lý số dư Credits và nhận 15 lượt xuất sách miễn phí!'}
+              ? 'Nhập mã đã gửi về hòm thư để tiếp tục sử dụng'
+              : 'Đăng nhập nhanh để lưu tài liệu và nhận 15 lượt xuất sách miễn phí!'}
           </p>
         </div>
 
-        {/* Lựa chọn phương thức đăng nhập */}
+        {/* Lựa chọn tiếp tục với Google */}
         {tab !== 'otp' && (
           <>
             <button type="button" className="btn-google-login" onClick={handleGoogleLogin} disabled={isLoading}>
-              <svg width="18" height="18" viewBox="0 0 24 24">
+              <svg width="20" height="20" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -174,11 +171,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                 />
               </svg>
-              {isLoading ? 'Đang kết nối...' : 'Chọn tài khoản Google trên máy'}
+              {isLoading ? 'Đang kết nối...' : 'Tiếp tục với Google'}
             </button>
 
             <div className="auth-divider">
-              <span>hoặc đăng nhập bằng Email / Mật khẩu</span>
+              <span>hoặc tiếp tục với Email</span>
             </div>
           </>
         )}
@@ -190,26 +187,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {tab === 'otp' ? (
           <form onSubmit={handleVerifyOtp} className="auth-form">
             <div className="auth-input-group">
-              <label>Email nhận mã:</label>
+              <label>Email của bạn:</label>
               <input type="text" value={email} disabled style={{ background: '#f8fafc', color: '#64748b' }} />
             </div>
 
             <div className="auth-input-group">
-              <label>Nhập mã xác thực (OTP) gửi về Email:</label>
+              <label>Mã xác thực gửi về Email:</label>
               <input
                 type="text"
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value)}
-                placeholder="Nhập mã 4 hoặc 6 chữ số..."
+                placeholder="Nhập mã 6 chữ số..."
                 maxLength={8}
-                style={{ fontSize: '18px', letterSpacing: '4px', textAlign: 'center', fontWeight: 'bold' }}
+                style={{ fontSize: '20px', letterSpacing: '4px', textAlign: 'center', fontWeight: 'bold' }}
                 autoFocus
                 required
               />
             </div>
 
             <button type="submit" className="btn-auth-submit" disabled={isLoading}>
-              {isLoading ? 'Đang kiểm tra mã...' : 'Xác Thực & Đăng Nhập Ngay'}
+              {isLoading ? 'Đang kiểm tra...' : 'Xác Thực & Vào Ứng Dụng'}
             </button>
 
             <div style={{ textAlign: 'center', marginTop: '12px' }}>
@@ -231,24 +228,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   setErrorMessage('')
                 }}
               >
-                Quay lại đăng nhập
+                Dùng email khác
               </button>
             </div>
           </form>
         ) : (
-          <form onSubmit={handleSubmit} className="auth-form">
-            {tab === 'register' && (
-              <div className="auth-input-group">
-                <label>Họ và tên / Tên trung tâm:</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="VD: Cô Minh Thư"
-                />
-              </div>
-            )}
-
+          /* Form Email chuẩn quốc tế: Mặc định gửi OTP không cần nhớ mật khẩu, hoặc mở mật khẩu */
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              if (usePassword) {
+                handlePasswordSubmit(e)
+              } else {
+                handleSendOtp(email)
+              }
+            }}
+            className="auth-form"
+          >
             <div className="auth-input-group">
               <label>Địa chỉ Email:</label>
               <input
@@ -260,70 +256,43 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               />
             </div>
 
-            <div className="auth-input-group">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            {usePassword && (
+              <div className="auth-input-group">
                 <label>Mật khẩu:</label>
-                <button
-                  type="button"
-                  style={{ background: 'none', border: 'none', color: '#2563eb', fontSize: '12px', cursor: 'pointer', padding: 0 }}
-                  onClick={() => handleSendOtp(email)}
-                >
-                  Đăng nhập không cần mật khẩu (Nhận mã OTP qua Email) ✉️
-                </button>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                />
               </div>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-              />
-            </div>
+            )}
 
             <button type="submit" className="btn-auth-submit" disabled={isLoading}>
               {isLoading
-                ? 'Đang kết nối...'
-                : tab === 'login'
-                ? 'Đăng Nhập Ngay'
-                : 'Tạo Tài Khoản & Nhận 15 Credits'}
+                ? 'Đang xử lý...'
+                : usePassword
+                ? 'Đăng Nhập Với Mật Khẩu'
+                : 'Tiếp Tục Với Email (Gửi mã OTP)'}
             </button>
-          </form>
-        )}
 
-        {tab !== 'otp' && (
-          <div className="auth-footer-switch">
-            {tab === 'login' ? (
-              <span>
-                Chưa có tài khoản?{' '}
-                <button
-                  type="button"
-                  className="btn-switch-tab"
-                  onClick={() => {
-                    setTab('register')
-                    setErrorMessage('')
-                    setSuccessNotice('')
-                  }}
-                >
-                  Đăng ký nhận 15 Credits miễn phí
-                </button>
-              </span>
-            ) : (
-              <span>
-                Đã có tài khoản?{' '}
-                <button
-                  type="button"
-                  className="btn-switch-tab"
-                  onClick={() => {
-                    setTab('login')
-                    setErrorMessage('')
-                    setSuccessNotice('')
-                  }}
-                >
-                  Đăng nhập
-                </button>
-              </span>
-            )}
-          </div>
+            <div style={{ textAlign: 'center', marginTop: '14px' }}>
+              <button
+                type="button"
+                className="btn-switch-tab"
+                style={{ fontSize: '12px', color: '#64748b', textDecoration: 'underline' }}
+                onClick={() => {
+                  setUsePassword(!usePassword)
+                  setErrorMessage('')
+                }}
+              >
+                {usePassword
+                  ? '← Đăng nhập không cần mật khẩu (Nhận mã qua Email)'
+                  : 'Hoặc đăng nhập bằng Mật khẩu riêng →'}
+              </button>
+            </div>
+          </form>
         )}
       </div>
     </div>
