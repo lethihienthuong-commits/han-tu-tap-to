@@ -92,8 +92,8 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
               </svg>
             </div>
             <div className="feature-content">
-              <h4>Xuất File Word & In Chuẩn A4</h4>
-              <p>Tải trọn bộ file .DOCX để chỉnh sửa thêm hoặc bấm in nhanh từ trình duyệt với độ sắc nét tuyệt đối.</p>
+              <h4>Xuất File Word (.DOCX) Chuẩn A4</h4>
+              <p>Tải trọn bộ file Word chất lượng cao để dễ dàng lưu trữ, chỉnh sửa thêm hoặc in ấn sắc nét theo nhu cầu.</p>
             </div>
           </div>
         </div>
