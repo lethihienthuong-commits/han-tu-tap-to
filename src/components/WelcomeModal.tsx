@@ -102,8 +102,8 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
         <div className="welcome-gift-box">
           <div className="gift-icon">🎁</div>
           <div className="gift-text">
-            <strong>Món quà khởi đầu dành cho bạn:</strong>
-            <span>Đã chuẩn bị sẵn <strong>15 Credits miễn phí</strong> để bạn thoải mái trải nghiệm xuất những trang sách đầu tiên!</span>
+            <strong>Món quà khởi đầu dành cho bạn: </strong>
+            <span>Đã chuẩn bị sẵn <strong>15 Credits miễn phí</strong> để bạn thoải mái trải nghiệm xuất những trang vở tập viết đầu tiên!</span>
           </div>
         </div>
 
