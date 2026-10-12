@@ -426,15 +426,13 @@ function App() {
     const willExportMulti = isVipMode && effectiveBatchItems.length > 1
     const pagesToExport = willExportMulti ? effectiveBatchItems.length : 1
 
-    // Kiểm tra số dư Credits (Mỗi trang tốn 1 credit khi xuất bộ nhiều trang VIP)
-    if (willExportMulti) {
-      if (userCredits < pagesToExport) {
-        setIsPaymentModalOpen(true)
-        alert(
-          `⚠️ Bạn cần ${pagesToExport} Credits để xuất ${pagesToExport} trang A4, nhưng số dư hiện tại chỉ còn ${userCredits} Credits.\n\nVui lòng nạp thêm Credits để tiếp tục xuất file nhé!`
-        )
-        return
-      }
+    // Kiểm tra số dư Credits: 1 trang = 1 credit (bất kể xuất 1 trang hay cả bộ)
+    if (userCredits < pagesToExport) {
+      setIsPaymentModalOpen(true)
+      alert(
+        `⚠️ Bạn cần ${pagesToExport} Credits để xuất ${pagesToExport} trang A4, nhưng số dư hiện tại chỉ còn ${userCredits} Credits.\n\nVui lòng nạp thêm Credits để tiếp tục xuất file nhé!`
+      )
+      return
     }
 
     const singleExportChar = effectiveBatchItems.length === 1 ? effectiveBatchItems[0].char : previewItem.char
@@ -448,6 +446,7 @@ function App() {
           : 'Đang khởi tạo file Word (.docx)...'
       )
 
+      // 1. Tạo và tải file Word hoàn tất trước
       await exportToWord({
         char: singleExportChar,
         pinyin: singleExportPinyin,
@@ -466,18 +465,18 @@ function App() {
         charRowLimit: charRowLimit > 0 ? charRowLimit : undefined,
       })
 
-      // Trừ credits tương ứng với số trang đã xuất
-      if (willExportMulti) {
-        const remaining = userCredits - pagesToExport
-        updateCredits(remaining)
-        setExportMessage(`Đã tải xuống thành công! (Trừ ${pagesToExport} Credits, còn lại ${remaining})`)
-      } else {
-        setExportMessage('Đã tải xuống file Word thành công!')
-      }
-      setTimeout(() => setExportMessage(''), 3500)
+      // 2. KHI TẢI FILE THÀNH CÔNG RỒI MỚI CHÍNH THỨC TRỪ CREDITS
+      const remaining = userCredits - pagesToExport
+      updateCredits(remaining)
+      setExportMessage(
+        pagesToExport > 1
+          ? `Đã tải xuống thành công trọn bộ! (Trừ ${pagesToExport} Credits, còn lại ${remaining})`
+          : `Đã tải xuống file Word thành công! (Trừ 1 Credit, còn lại ${remaining})`
+      )
+      setTimeout(() => setExportMessage(''), 4000)
     } catch (error) {
       console.error('Lỗi khi xuất file Word:', error)
-      alert('Có lỗi xảy ra khi tạo file Word. Vui lòng thử lại!')
+      alert('Có lỗi xảy ra khi tạo file Word. File chưa được tải nên hệ thống KHÔNG trừ credit nào của bạn!')
     } finally {
       setIsExporting(false)
     }
@@ -485,6 +484,23 @@ function App() {
 
   // In trực tiếp từ trình duyệt
   const handlePrint = () => {
+    // In nhanh 1 trang hiện tại: kiểm tra tối thiểu 1 credit
+    if (userCredits < 1) {
+      setIsPaymentModalOpen(true)
+      alert('⚠️ Bạn cần tối thiểu 1 Credit để in trang tài liệu. Vui lòng nạp thêm Credits nhé!')
+      return
+    }
+
+    // Lắng nghe sự kiện sau khi in hoàn tất (user bấm Print trên trình duyệt)
+    const afterPrintHandler = () => {
+      window.removeEventListener('afterprint', afterPrintHandler)
+      const remaining = userCredits - 1
+      updateCredits(remaining)
+      setExportMessage(`Đã in hoàn tất! (Trừ 1 Credit, còn lại ${remaining})`)
+      setTimeout(() => setExportMessage(''), 3500)
+    }
+
+    window.addEventListener('afterprint', afterPrintHandler)
     window.print()
   }
 
