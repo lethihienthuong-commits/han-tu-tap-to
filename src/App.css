@@ -1,0 +1,1034 @@
+/* Toàn bộ bố cục ứng dụng */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f1f5f9;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #1e293b;
+}
+
+/* 1. Bảng điều khiển (Control Panel) */
+.control-panel {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  padding: 20px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.panel-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.brand-text-wrap {
+  flex: 1;
+}
+
+.brand-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vip-badge-btn {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  border: none;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+}
+
+.vip-badge-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.45);
+}
+
+/* Thẻ cài đặt VIP Thương hiệu */
+.vip-settings-card {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.08);
+}
+
+.vip-settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.vip-settings-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #92400e;
+}
+
+.vip-settings-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reset-vip-btn {
+  background: #ffffff;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.reset-vip-btn:hover {
+  background: #fef3c7;
+  border-color: #f59e0b;
+  color: #78350f;
+}
+
+.close-vip-btn {
+  background: transparent;
+  border: none;
+  color: #b45309;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.vip-inputs-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.vip-input-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 160px;
+}
+
+.vip-input-item label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #78350f;
+}
+
+.vip-input-item input {
+  height: 36px;
+  padding: 0 10px;
+  font-size: 13px;
+  border: 1px solid #fcd34d;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1e293b;
+  outline: none;
+}
+
+.vip-input-item input:focus {
+  border-color: #d97706;
+  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2);
+}
+
+.vip-file-input {
+  padding-top: 6px !important;
+  font-size: 12px !important;
+}
+
+/* Khu vực VIP 1: Nhập đoạn văn nhiều chữ */
+.vip-batch-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #f59e0b;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+
+.vip-batch-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.vip-batch-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.vip-star {
+  color: #d97706;
+}
+
+.vip-batch-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-count-badge {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 12px;
+}
+
+.vip-file-upload-wrap {
+  display: inline-flex;
+}
+
+.btn-vip-upload {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25);
+}
+
+.btn-vip-upload:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-1px);
+}
+
+.vip-file-status {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #1e40af;
+  margin-bottom: 8px;
+}
+
+.vip-limit-warning {
+  background: #fffbeb;
+  border: 1px dashed #f59e0b;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #92400e;
+  margin-bottom: 8px;
+}
+
+.btn-vip-sample,
+.btn-vip-clear {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #475569;
+}
+
+.btn-vip-sample:hover {
+  background: #f1f5f9;
+  color: #1e40af;
+}
+
+.btn-vip-clear:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.vip-batch-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #0f172a;
+  outline: none;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.vip-batch-textarea:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+/* Thanh phân trang xem nhanh từng chữ */
+.btn-vip-restore {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #166534;
+}
+
+.btn-vip-restore:hover {
+  background: #dcfce7;
+  border-color: #4ade80;
+}
+
+/* Thanh phân trang xem nhanh từng chữ & danh sách chọn/bỏ */
+.batch-chips-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.batch-chips-header-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.batch-chips-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+  white-space: nowrap;
+}
+
+.batch-chips-hint {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 400;
+}
+
+.batch-chips-list {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.batch-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 6px 3px 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.batch-chip:hover {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.batch-chip.active {
+  background: #f59e0b;
+  color: #ffffff;
+  border-color: #d97706;
+  font-weight: 700;
+}
+
+.batch-chip.active .chip-pinyin {
+  color: #ffffff;
+  opacity: 0.9;
+}
+
+.batch-chip.active .chip-remove-btn {
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.batch-chip.active .chip-remove-btn:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Trạng thái chữ bị người dùng bỏ */
+.batch-chip.excluded {
+  background: #f1f5f9;
+  border: 1px dashed #94a3b8;
+  color: #94a3b8;
+  opacity: 0.65;
+}
+
+.batch-chip.excluded .chip-char {
+  text-decoration: line-through;
+}
+
+.batch-chip.excluded .chip-pinyin {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+.batch-chip.excluded .chip-remove-btn {
+  color: #166534;
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+.batch-chip.excluded:hover {
+  opacity: 1;
+  border-color: #64748b;
+  background: #e2e8f0;
+}
+
+.chip-char {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.chip-pinyin {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.chip-remove-btn {
+  background: transparent;
+  border: none;
+  font-size: 10px;
+  font-weight: bold;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 1px 4px;
+  border-radius: 3px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  margin-left: 2px;
+}
+
+.chip-remove-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+/* Thể hiện Header A4 có thương hiệu */
+.brand-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sheet-logo-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.sheet-sub-brand {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.brand-logo {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: bold;
+  border-radius: 8px;
+  font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);
+}
+
+.panel-brand h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.panel-brand .subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+/* Khung nhập liệu và điều khiển */
+.controls-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.input-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-end;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Kích thước vừa vặn tự nhiên cho từng ô */
+.input-group:nth-child(1) input { /* Chữ Hán */
+  width: 80px;
+}
+
+.input-group:nth-child(2) input { /* Chỉnh Sửa Phiên Âm Pinyin */
+  width: 175px;
+}
+
+.input-group:nth-child(3) input { /* Tìm bằng Pinyin */
+  width: 130px;
+}
+
+.input-group:nth-child(4) select { /* Kiểu Font chữ */
+  width: 175px;
+}
+
+.input-group:nth-child(5) .size-segmented-control { /* Kích thước chữ */
+  width: 165px;
+}
+
+.input-group:nth-child(6) .row-col-inputs { /* Bố cục giấy */
+  width: 200px;
+}
+
+.input-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.input-group .required {
+  color: #dc2626;
+}
+
+.input-group input,
+.input-group select {
+  height: 42px;
+  padding: 0 12px;
+  font-size: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #0f172a;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.pinyin-search-input {
+  font-size: 14px !important;
+  font-weight: 600;
+  color: #1e40af !important;
+}
+
+.direct-char-input {
+  font-size: 14px !important;
+  font-weight: 600;
+  text-align: center;
+  font-family: 'Microsoft YaHei', sans-serif;
+}
+
+.editable-pinyin-input {
+  font-size: 14px !important;
+  font-weight: 600;
+}
+
+/* Nút chọn kích thước chữ (To - Vừa - Nhỏ) */
+.size-segmented-control {
+  display: flex;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 2px;
+  height: 42px;
+  box-sizing: border-box;
+}
+
+.size-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.size-btn:hover {
+  color: #0f172a;
+}
+
+.size-btn.active {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
+}
+
+.row-col-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.row-col-inputs select {
+  flex: 1;
+  padding: 0 8px;
+  font-size: 13px;
+}
+
+.row-col-inputs .divider {
+  color: #94a3b8;
+  font-weight: bold;
+}
+
+/* Khu vực danh sách chữ đề xuất */
+.candidates-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.candidates-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.candidates-label strong {
+  color: #1e40af;
+}
+
+.candidates-hint {
+  font-size: 12px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.candidates-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.candidates-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.candidates-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.candidate-card {
+  min-width: 52px;
+  height: 56px;
+  padding: 4px 8px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.candidate-card:hover {
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+}
+
+.candidate-card.selected {
+  background: #eff6ff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+}
+
+.candidate-char {
+  font-size: 22px;
+  line-height: 1.1;
+  font-weight: bold;
+  color: #0f172a;
+}
+
+.candidate-card.selected .candidate-char {
+  color: #1e40af;
+}
+
+.candidate-pinyin {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.candidate-card.selected .candidate-pinyin {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.no-candidate-message {
+  font-size: 13px;
+  color: #94a3b8;
+  font-style: italic;
+  padding: 6px 0;
+}
+
+/* Các nút bấm hành động */
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  height: 42px;
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #1e40af;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(30, 64, 175, 0.25);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(30, 64, 175, 0.3);
+}
+
+.btn-secondary {
+  background: #f8fafc;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.btn-outline {
+  background: #ffffff;
+  color: #475569;
+  border: 1px dashed #94a3b8;
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.sheet-instruction.blank-mode {
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 12px;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.status-toast {
+  font-size: 13px;
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* 2. Khu vực xem trước A4 (Preview) */
+.preview-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px 64px;
+}
+
+.preview-hint {
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* Mô phỏng tờ giấy A4 */
+.a4-sheet {
+  background: #ffffff;
+  width: 210mm;
+  min-height: 297mm;
+  padding: 16mm 18mm 14mm;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  border-radius: 2px;
+}
+
+/* Header trên tờ giấy */
+.sheet-header {
+  margin-bottom: 14px;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 2px solid #0f172a;
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+}
+
+.sheet-title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin: 0;
+  color: #0f172a;
+}
+
+.header-motto {
+  font-size: 14px;
+  font-style: italic;
+  font-weight: 500;
+  color: #475569;
+  letter-spacing: 0.3px;
+}
+
+.sample-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+.sample-char {
+  font-size: 34px;
+  font-weight: bold;
+  font-family: 'KaiTi', 'STKaiti', '楷体', 'Microsoft YaHei', serif;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.sample-details {
+  font-size: 15px;
+  color: #334155;
+}
+
+.sample-pinyin-text {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.sample-meaning-text {
+  color: #64748b;
+}
+
+.sheet-instruction {
+  font-size: 12px;
+  font-style: italic;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* Lưới ô vuông Điền Tự Cách */
+.tianzige-grid {
+  display: grid;
+  gap: 5px;
+  flex: 1;
+  align-content: start;
+}
+
+/* Khung từng ô Điền Tự Cách */
+.tianzige-wrapper {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tianzige-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Khoảng không gian ghi chú có các hàng dấu chấm phía dưới */
+.notes-container {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.notes-line {
+  display: flex;
+  align-items: baseline;
+  width: 100%;
+}
+
+.notes-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-right: 8px;
+  white-space: nowrap;
+}
+
+.notes-dot-leader {
+  flex: 1;
+  height: 1px;
+  border-bottom: 1.5px dotted #94a3b8;
+}
+
+.notes-dot-leader.full-width {
+  width: 100%;
+}
+
+/* Chân trang tờ giấy */
+.sheet-footer {
+  margin-top: 14px;
+  padding-top: 8px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* 3. In ấn giấy chuẩn (Khi bấm Print hoặc Ctrl+P) */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body,
+  .app-container,
+  .preview-container {
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .a4-sheet {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    width: 100% !important;
+    min-height: 100% !important;
+    padding: 10mm 12mm !important;
+  }
+}
+
+/* Responsive cho màn hình nhỏ hơn */
+@media (max-width: 768px) {
+  .a4-sheet {
+    width: 100%;
+    min-height: auto;
+    padding: 16px;
+  }
+}
