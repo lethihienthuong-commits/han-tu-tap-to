@@ -474,7 +474,12 @@ function App() {
           : `Đã tải xuống file Word thành công! (Trừ 1 Credit, còn lại ${remaining})`
       )
       setTimeout(() => setExportMessage(''), 4000)
-    } catch (error) {
+    } catch (error: any) {
+      if (error?.message === 'USER_CANCELLED') {
+        setExportMessage('Đã hủy tải file (Không trừ Credits)')
+        setTimeout(() => setExportMessage(''), 2500)
+        return
+      }
       console.error('Lỗi khi xuất file Word:', error)
       alert('Có lỗi xảy ra khi tạo file Word. File chưa được tải nên hệ thống KHÔNG trừ credit nào của bạn!')
     } finally {

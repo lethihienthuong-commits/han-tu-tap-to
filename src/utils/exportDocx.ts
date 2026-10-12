@@ -479,6 +479,34 @@ export async function exportToWord({
       ? `Tap_to_chu_${char}.docx`
       : `Giay_ke_o_tu_luyen_viet_A4.docx`
 
+  // 1. Nếu trình duyệt hỗ trợ Native Save Picker (Chrome/Edge/Cốc Cốc), cho phép người dùng chọn nơi lưu và xác nhận đã lưu
+  if ('showSaveFilePicker' in window) {
+    try {
+      const handle = await (window as any).showSaveFilePicker({
+        suggestedName: fileName,
+        types: [
+          {
+            description: 'Microsoft Word Document',
+            accept: {
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+            },
+          },
+        ],
+      })
+      const writable = await handle.createWritable()
+      await writable.write(blob)
+      await writable.close()
+      return true
+    } catch (pickerErr: any) {
+      // Nếu người dùng bấm "Cancel" / "Hủy" trên cửa sổ lưu file thì không lưu và không trừ credits
+      if (pickerErr.name === 'AbortError') {
+        throw new Error('USER_CANCELLED')
+      }
+      // Nếu lỗi khác, fallback sang cơ chế download tự động
+    }
+  }
+
+  // 2. Cơ chế tải tự động chuẩn FileSaver
   try {
     saveAs(blob, fileName)
     return true
