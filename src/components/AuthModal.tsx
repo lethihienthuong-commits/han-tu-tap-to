@@ -21,17 +21,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   if (!isOpen) return null
 
-  // Đăng nhập nhanh bằng Google (Mô phỏng One-click Google Login)
+  // Đăng nhập nhanh bằng tài khoản Google (Nhập Gmail thật của người dùng)
   const handleGoogleLogin = () => {
-    const mockUser: AuthUser = {
-      id: 'google_user_' + Math.floor(1000 + Math.random() * 9000),
-      name: 'Giáo Viên Tiếng Trung',
-      email: 'giaovien.tiengtrung@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=chinese_teacher',
+    const inputGmail = window.prompt(
+      'ĐĂNG NHẬP VỚI TÀI KHOẢN GOOGLE:\n\nNhập địa chỉ Gmail của bạn để kết nối:',
+      email || 'example@gmail.com'
+    )
+
+    if (!inputGmail || !inputGmail.trim()) return
+
+    const cleanEmail = inputGmail.trim().toLowerCase()
+    const namePart = cleanEmail.split('@')[0]
+    const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1)
+
+    const googleUser: AuthUser = {
+      id: 'google_' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 12),
+      name: formattedName,
+      email: cleanEmail,
+      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${formattedName}`,
       role: 'vip',
     }
-    loginUser(mockUser)
-    onLoginSuccess(mockUser)
+
+    loginUser(googleUser)
+    onLoginSuccess(googleUser)
     onClose()
   }
 
