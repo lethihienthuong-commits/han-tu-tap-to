@@ -443,7 +443,7 @@ export async function exportToWord({
   branding,
   multiPageItems,
   charRowLimit,
-}: ExportOptions): Promise<void> {
+}: ExportOptions): Promise<boolean> {
   const fontOpt = FONT_OPTIONS.find((f) => f.id === fontId) || FONT_OPTIONS[0]
 
   // Xác định danh sách các trang cần xuất
