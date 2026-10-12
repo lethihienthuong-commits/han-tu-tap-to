@@ -20,29 +20,29 @@ export const FONT_OPTIONS: FontOption[] = [
   },
   {
     id: 'kaiti',
-    name: 'KaiTi (Khải thư - Bút lông)',
-    fontFamily: '"KaiTi", "STKaiti", "楷体", serif',
+    name: 'KaiTi (Khải thư - Chuẩn luyện viết)',
+    fontFamily: '"LXGW WenKai", "KaiTi", "STKaiti", "Kaiti SC", "楷体", "Ma Shan Zheng", serif',
     docxFont: 'KaiTi',
-    desc: 'Nét cọ thư pháp truyền thống',
+    desc: 'Nét bút khải thư chuẩn mực để luyện viết',
   },
   {
     id: 'simhei',
     name: 'SimHei (Hắc thể - Nét đậm)',
-    fontFamily: '"SimHei", "黑体", sans-serif',
+    fontFamily: '"SimHei", "黑体", "Noto Sans SC", sans-serif',
     docxFont: 'SimHei',
     desc: 'Nét dày, vuông vắn, rõ ràng',
   },
   {
     id: 'simsun',
     name: 'SimSun (Tống thể - Cổ điển)',
-    fontFamily: '"SimSun", "宋体", serif',
+    fontFamily: '"SimSun", "宋体", "Noto Serif SC", serif',
     docxFont: 'SimSun',
     desc: 'Font sách in cổ điển có chân',
   },
   {
     id: 'fangsong',
-    name: 'FangSong (Phảng Tống)',
-    fontFamily: '"FangSong", "仿宋", serif',
+    name: 'FangSong (Phảng Tống / Tiêu đài)',
+    fontFamily: '"FangSong", "仿宋", "ZCOOL XiaoWei", "Noto Serif SC", serif',
     docxFont: 'FangSong',
     desc: 'Nét thanh mảnh, tao nhã',
   },
@@ -149,6 +149,7 @@ export const TianzigeBox: React.FC<TianzigeBoxProps> = ({
             fill={charColor}
             fontSize={fontSize}
             fontFamily={fontFamily}
+            style={{ fontFamily }}
           >
             {char}
           </text>
