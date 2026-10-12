@@ -236,6 +236,51 @@ function App() {
     }
   }
 
+  // Quản lý kéo thả sắp xếp lại thứ tự chữ
+  const [draggedChipIndex, setDraggedChipIndex] = useState<number | null>(null)
+  const [dragOverChipIndex, setDragOverChipIndex] = useState<number | null>(null)
+
+  const handleChipDragStart = (idx: number, e: React.DragEvent) => {
+    setDraggedChipIndex(idx)
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('text/plain', String(idx))
+  }
+
+  const handleChipDragOver = (idx: number, e: React.DragEvent) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    if (dragOverChipIndex !== idx) {
+      setDragOverChipIndex(idx)
+    }
+  }
+
+  const handleChipDrop = (targetIdx: number, e: React.DragEvent) => {
+    e.preventDefault()
+    if (draggedChipIndex === null || draggedChipIndex === targetIdx) {
+      setDraggedChipIndex(null)
+      setDragOverChipIndex(null)
+      return
+    }
+
+    // Hoán đổi hoặc di chuyển thứ tự chữ trong batchText
+    const hanziChars = batchText.match(/[\p{Script=Han}]/gu) || []
+    if (draggedChipIndex < hanziChars.length && targetIdx < hanziChars.length) {
+      const updatedChars = [...hanziChars]
+      const [movedChar] = updatedChars.splice(draggedChipIndex, 1)
+      updatedChars.splice(targetIdx, 0, movedChar)
+      setBatchText(updatedChars.join(''))
+      setActivePageIndex(targetIdx)
+    }
+
+    setDraggedChipIndex(null)
+    setDragOverChipIndex(null)
+  }
+
+  const handleChipDragEnd = () => {
+    setDraggedChipIndex(null)
+    setDragOverChipIndex(null)
+  }
+
   // Tổng số chữ Hán tìm thấy trong văn bản (để cảnh báo nếu người dùng dán quá 1000 chữ)
   const totalCharsFound = useMemo(() => {
     if (!batchText.trim()) return 0
@@ -612,7 +657,7 @@ function App() {
             placeholder="Dán đoạn văn hoặc danh sách từ vào đây (tối đa 1000 chữ tương ứng cuốn tập 1000 trang). Mỗi chữ Hán sẽ là 1 trang A4 đầy đủ các dòng tập tô!"
           />
 
-          {/* Danh sách các chữ liệt kê & Cho phép bấm bỏ chữ hoặc xem trước */}
+          {/* Danh sách các chữ liệt kê & Cho phép kéo thả sắp xếp, bấm bỏ chữ hoặc xem trước */}
           {parsedBatchItems.length > 0 && (
             <div className="batch-chips-bar">
               <div className="batch-chips-header-line">
@@ -620,18 +665,25 @@ function App() {
                   Danh sách chữ ({effectiveBatchItems.length}/{parsedBatchItems.length}):
                 </span>
                 <span className="batch-chips-hint">
-                  (Bấm dấu ✕ trên chữ để bỏ không đưa vào vở, hoặc bấm vào chữ để xem trước trang)
+                  (✨ Kéo thả các thẻ chữ để sắp xếp thứ tự • Bấm ✕ để loại bỏ)
                 </span>
               </div>
               <div className="batch-chips-list">
                 {parsedBatchItems.map((item, idx) => {
                   const isExcluded = excludedIndices.has(item.originalIndex)
                   const isActive = activePageIndex === idx && !isExcluded
+                  const isDragging = draggedChipIndex === idx
+                  const isDragOver = dragOverChipIndex === idx && draggedChipIndex !== idx
 
                   return (
                     <div
                       key={idx}
-                      className={`batch-chip ${isActive ? 'active' : ''} ${isExcluded ? 'excluded' : ''}`}
+                      draggable={!isExcluded}
+                      onDragStart={(e) => handleChipDragStart(idx, e)}
+                      onDragOver={(e) => handleChipDragOver(idx, e)}
+                      onDrop={(e) => handleChipDrop(idx, e)}
+                      onDragEnd={handleChipDragEnd}
+                      className={`batch-chip ${isActive ? 'active' : ''} ${isExcluded ? 'excluded' : ''} ${isDragging ? 'dragging' : ''} ${isDragOver ? 'drag-over' : ''}`}
                       onClick={() => {
                         if (!isExcluded) {
                           setActivePageIndex(idx)
@@ -643,9 +695,10 @@ function App() {
                       title={
                         isExcluded
                           ? `Chữ "${item.char}" đang bị bỏ. Bấm để chọn lại vào file.`
-                          : `Chữ "${item.char}" (${item.pinyin}). Bấm để xem trước, bấm ✕ để bỏ.`
+                          : `Chữ "${item.char}" (${item.pinyin}). Giữ chuột kéo để đổi vị trí, bấm ✕ để bỏ.`
                       }
                     >
+                      <span className="chip-drag-handle" title="Kéo để đổi thứ tự">⋮⋮</span>
                       <span className="chip-char">{item.char}</span>
                       <span className="chip-pinyin">{item.pinyin}</span>
                       <button

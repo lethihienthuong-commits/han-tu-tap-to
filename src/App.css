@@ -503,6 +503,34 @@
   background: rgba(0, 0, 0, 0.3);
 }
 
+.chip-drag-handle {
+  font-size: 11px;
+  color: #94a3b8;
+  cursor: grab;
+  margin-right: 2px;
+  letter-spacing: -1px;
+}
+
+.batch-chip.active .chip-drag-handle {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.batch-chip:active .chip-drag-handle {
+  cursor: grabbing;
+}
+
+.batch-chip.dragging {
+  opacity: 0.4;
+  transform: scale(0.96);
+  border: 1px dashed #f59e0b;
+}
+
+.batch-chip.drag-over {
+  border: 2px solid #2563eb !important;
+  background: #eff6ff !important;
+  transform: scale(1.05);
+}
+
 /* Trạng thái chữ bị người dùng bỏ */
 .batch-chip.excluded {
   background: #f1f5f9;
