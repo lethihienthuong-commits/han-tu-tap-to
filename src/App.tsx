@@ -122,7 +122,7 @@ function App() {
 
   // --- TÍNH NĂNG VIP 1: Nhập nhiều chữ / Danh sách từ vựng ---
   const [isVipMode] = useState<boolean>(true) // Bật sẵn chế độ tạo sách nhiều chữ
-  const [batchText, setBatchText] = useState<string>('学中文很快乐')
+  const [batchText, setBatchText] = useState<string>('')
   const [showVipPanel, setShowVipPanel] = useState<boolean>(false) // Mặc định ẩn ô thương hiệu, bấm nút để mở khi cần
   const [activePageIndex, setActivePageIndex] = useState<number>(0)
   const [isReadingFile, setIsReadingFile] = useState<boolean>(false)
