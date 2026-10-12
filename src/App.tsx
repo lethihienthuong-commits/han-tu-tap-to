@@ -117,8 +117,8 @@ function App() {
   // Bố cục dòng và cột
   const [rows, setRows] = useState<number>(14)
   const [cols, setCols] = useState<number>(10)
-  // Bản thiết kế: số dòng có chữ mẫu (0 nghĩa là toàn bộ các dòng đều có chữ tô)
-  const [charRowLimit, setCharRowLimit] = useState<number>(0)
+  // Bản thiết kế: số dòng có chữ mẫu (mặc định bằng tổng số dòng của trang, ví dụ 14)
+  const [charRowLimit, setCharRowLimit] = useState<number>(14)
 
   // --- TÍNH NĂNG VIP 1: Nhập nhiều chữ / Danh sách từ vựng ---
   const [isVipMode] = useState<boolean>(true) // Bật sẵn chế độ tạo sách nhiều chữ
@@ -766,8 +766,9 @@ function App() {
                     else if (newRows === 14) setCols(10)
                     else if (newRows === 22) setCols(16)
 
-                    // Nếu số dòng có chữ ở Bản thiết kế vượt quá số dòng trang mới thì tự động hạ xuống
-                    if (charRowLimit > newRows) setCharRowLimit(newRows)
+                    if (charRowLimit >= rows || charRowLimit > newRows) {
+                      setCharRowLimit(newRows)
+                    }
                   }}
                   aria-label="Số dòng"
                 >
@@ -788,7 +789,9 @@ function App() {
                     else if (newCols === 16) matchedRows = 22
                     setRows(matchedRows)
 
-                    if (charRowLimit > matchedRows) setCharRowLimit(matchedRows)
+                    if (charRowLimit >= rows || charRowLimit > matchedRows) {
+                      setCharRowLimit(matchedRows)
+                    }
                   }}
                   aria-label="Số cột"
                 >
@@ -814,7 +817,6 @@ function App() {
                   onChange={(e) => {
                     const valStr = e.target.value.trim()
                     if (valStr === '') {
-                      // Nếu để trống thì coi như hiện đầy đủ cả trang
                       setCharRowLimit(0)
                       return
                     }
@@ -828,7 +830,7 @@ function App() {
                       setCharRowLimit(num)
                     }
                   }}
-                  placeholder={`Tất cả (${rows} dòng)`}
+                  placeholder={`${rows}`}
                   className="blueprint-number-input"
                 />
                 <span className="blueprint-max-hint">/ {rows} dòng</span>
