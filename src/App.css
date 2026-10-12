@@ -719,9 +719,9 @@
 }
 
 .input-group:nth-child(7),
-.design-blueprint-group { /* Số dòng có chữ */
-  width: 200px;
-  margin-left: 18px; /* Tách thêm khoảng cách rõ nét với tab Bố cục giấy */
+.design-blueprint-group { /* Dòng có chữ */
+  width: 110px;
+  margin-left: 8px;
 }
 .design-blueprint-group .blueprint-input-wrap {
   width: 100%;
@@ -732,14 +732,15 @@
 
 .blueprint-number-input {
   width: 100% !important;
-  padding-right: 48px !important;
+  padding-right: 42px !important;
+  padding-left: 10px !important;
   font-weight: 600;
   color: #1e293b;
 }
 
 .blueprint-max-hint {
   position: absolute;
-  right: 12px;
+  right: 10px;
   font-size: 13px;
   font-weight: 600;
   color: #64748b;
