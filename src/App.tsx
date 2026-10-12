@@ -1156,6 +1156,7 @@ function App() {
           <div className="sheet-footer">
             <span>Hán Tự Tập Tô • Khổ A4</span>
             <span>Họ và tên: ............................................ Ngày: ...../...../202...</span>
+          </div>
         </div>
       </main>
 
