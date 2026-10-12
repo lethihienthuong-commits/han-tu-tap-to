@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import {
   type AuthUser,
   loginUser,
-  signInWithGoogleOAuth,
   signUpWithEmail,
   signInWithEmail,
 } from '../utils/authService'
@@ -29,37 +28,34 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   if (!isOpen) return null
 
-  // Đăng nhập bằng tài khoản Google thật (OAuth) hoặc qua prompt
-  const handleGoogleLogin = async () => {
-    setIsLoading(true)
+  // Đăng nhập nhanh bằng tài khoản Google (Nhập Gmail tiện lợi, không lo cấu hình Google Cloud phức tạp)
+  const handleGoogleLogin = () => {
     setErrorMessage('')
-    try {
-      const { error } = await signInWithGoogleOAuth()
-      if (error) {
-        // Nếu môi trường chưa hỗ trợ redirect hoặc báo lỗi, fallback cho phép nhập Gmail
-        const inputGmail = window.prompt(
-          'ĐĂNG NHẬP VỚI TÀI KHOẢN GOOGLE:\n\nNhập địa chỉ Gmail của bạn để kết nối:',
-          email || 'example@gmail.com'
-        )
-        if (inputGmail && inputGmail.trim()) {
-          const cleanEmail = inputGmail.trim().toLowerCase()
-          const namePart = cleanEmail.split('@')[0]
-          const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1)
-          const googleUser: AuthUser = {
-            id: 'google_' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 12),
-            name: formattedName,
-            email: cleanEmail,
-            avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${formattedName}`,
-            role: 'vip',
-          }
-          loginUser(googleUser)
-          onLoginSuccess(googleUser)
-          onClose()
-        }
-      }
-    } finally {
-      setIsLoading(false)
+    const inputGmail = window.prompt(
+      'ĐĂNG NHẬP VỚI TÀI KHOẢN GOOGLE:\n\nNhập địa chỉ Gmail của bạn để kết nối ngay:',
+      email || 'example@gmail.com'
+    )
+    if (!inputGmail || !inputGmail.trim()) return
+
+    const cleanEmail = inputGmail.trim().toLowerCase()
+    if (!cleanEmail.includes('@')) {
+      setErrorMessage('Địa chỉ Email không hợp lệ!')
+      return
     }
+
+    const namePart = cleanEmail.split('@')[0]
+    const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1)
+    const googleUser: AuthUser = {
+      id: 'google_' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 12),
+      name: formattedName,
+      email: cleanEmail,
+      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${formattedName}`,
+      role: 'vip',
+    }
+
+    loginUser(googleUser)
+    onLoginSuccess(googleUser)
+    onClose()
   }
 
   // Đăng nhập / Đăng ký bằng Email & Mật khẩu vào Supabase Cloud
