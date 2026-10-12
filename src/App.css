@@ -651,17 +651,26 @@
   width: 175px;
 }
 
-.input-group:nth-child(5) .size-segmented-control { /* Kích thước chữ */
+.input-group:nth-child(5) { /* Kích thước chữ trong ô */
   width: 165px;
 }
-
-.input-group:nth-child(6) .row-col-inputs { /* Bố cục giấy */
-  width: 200px;
+.input-group:nth-child(5) .size-segmented-control {
+  width: 100%;
 }
 
-.input-group:nth-child(7) .blueprint-input-wrap,
-.design-blueprint-group .blueprint-input-wrap { /* Số dòng có chữ */
-  width: 250px;
+.input-group:nth-child(6) { /* Bố cục giấy */
+  width: 200px;
+}
+.input-group:nth-child(6) .row-col-inputs {
+  width: 100%;
+}
+
+.input-group:nth-child(7),
+.design-blueprint-group { /* Số dòng có chữ */
+  width: 200px;
+}
+.design-blueprint-group .blueprint-input-wrap {
+  width: 100%;
   display: flex;
   align-items: center;
   position: relative;
