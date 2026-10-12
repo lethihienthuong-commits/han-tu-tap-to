@@ -493,54 +493,59 @@ function App() {
       {/* Thanh điều khiển trên cùng (ẩn khi in giấy) */}
       <header className="control-panel no-print">
         <div className="panel-brand">
-          <div className="brand-logo">漢</div>
-          <div className="brand-text-wrap">
-            <div className="brand-title-row">
+          <div className="brand-left-group">
+            <div className="brand-logo">漢</div>
+            <div className="brand-text-wrap">
               <h1>Hán Tự Tập Tô</h1>
-              <div className="user-credits-badge" onClick={() => setIsPaymentModalOpen(true)} title="Bấm để nạp thêm Credits">
-                <span className="credits-gem">💎</span>
-                <span className="credits-val"><strong>{userCredits}</strong> Credits</span>
-                <span className="credits-add-btn">+ Nạp thêm</span>
-              </div>
-              <button
-                type="button"
-                className={`vip-badge-btn ${showVipPanel ? 'active' : ''}`}
-                onClick={() => setShowVipPanel(!showVipPanel)}
-                title="Bấm để ẩn / hiện ô Chỉnh sửa Thương hiệu trung tâm"
-              >
-                {showVipPanel ? '🏢 Ẩn ô Thương hiệu' : '🏢 Chỉnh sửa Thương hiệu'}
-              </button>
+              <p className="subtitle">
+                Tạo trang tập tô chữ Hán chuẩn A4 • Hỗ trợ xuất trọn bộ cả quyển vở & Chèn thương hiệu trung tâm
+              </p>
+            </div>
+          </div>
 
-              {/* Khu vực đăng nhập / Tài khoản người dùng */}
-              {currentUser ? (
-                <div className="user-profile-badge" title={`Đang đăng nhập: ${currentUser.email}`}>
-                  <span className="user-avatar-circle">
-                    {currentUser.name.charAt(0).toUpperCase()}
-                  </span>
-                  <span className="user-name-text">{currentUser.name}</span>
-                  <button
-                    type="button"
-                    className="btn-logout-small"
-                    onClick={handleLogout}
-                    title="Đăng xuất khỏi tài khoản này"
-                  >
-                    Thoát
-                  </button>
-                </div>
-              ) : (
+          {/* Nhóm các nút chức năng nằm ở phía bên phải màn hình */}
+          <div className="brand-right-actions">
+            <div className="user-credits-badge" onClick={() => setIsPaymentModalOpen(true)} title="Bấm để nạp thêm Credits">
+              <span className="credits-gem">💎</span>
+              <span className="credits-val"><strong>{userCredits}</strong> Credits</span>
+              <span className="credits-add-btn">+ Nạp thêm</span>
+            </div>
+
+            <button
+              type="button"
+              className={`vip-badge-btn ${showVipPanel ? 'active' : ''}`}
+              onClick={() => setShowVipPanel(!showVipPanel)}
+              title="Bấm để ẩn / hiện ô Chỉnh sửa Thương hiệu trung tâm"
+            >
+              {showVipPanel ? '🏢 Ẩn ô Thương hiệu' : '🏢 Chỉnh sửa Thương hiệu'}
+            </button>
+
+            {/* Khu vực đăng nhập / Tài khoản người dùng */}
+            {currentUser ? (
+              <div className="user-profile-badge" title={`Đang đăng nhập: ${currentUser.email}`}>
+                <span className="user-avatar-circle">
+                  {currentUser.name.charAt(0).toUpperCase()}
+                </span>
+                <span className="user-name-text">{currentUser.name}</span>
                 <button
                   type="button"
-                  className="btn-login-header"
-                  onClick={() => setIsAuthModalOpen(true)}
-                  title="Đăng nhập để lưu số dư và bảo vệ tài khoản"
+                  className="btn-logout-small"
+                  onClick={handleLogout}
+                  title="Đăng xuất khỏi tài khoản này"
                 >
-                  👤 Đăng Nhập
+                  Thoát
                 </button>
-              )}
-            </div>
-            <p className="subtitle">
-              Tạo trang tập tô chữ Hán chuẩn A4 • Hỗ trợ xuất trọn bộ cả quyển vở & Chèn thương hiệu trung tâm
-            </p>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="btn-login-header"
+                onClick={() => setIsAuthModalOpen(true)}
+                title="Đăng nhập để lưu số dư và bảo vệ tài khoản"
+              >
+                👤 Đăng Nhập
+              </button>
+            )}
           </div>
         </div>
 

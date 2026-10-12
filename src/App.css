@@ -22,19 +22,27 @@
 .panel-brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: space-between;
+  gap: 16px;
   margin-bottom: 14px;
+}
+
+.brand-left-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  flex-wrap: wrap;
 }
 
 .brand-text-wrap {
   flex: 1;
-}
-
-.brand-title-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
 }
 
 /* Huy hiệu Credits & Nút nạp */
