@@ -482,28 +482,6 @@ function App() {
     }
   }
 
-  // In trực tiếp từ trình duyệt
-  const handlePrint = () => {
-    // In nhanh 1 trang hiện tại: kiểm tra tối thiểu 1 credit
-    if (userCredits < 1) {
-      setIsPaymentModalOpen(true)
-      alert('⚠️ Bạn cần tối thiểu 1 Credit để in trang tài liệu. Vui lòng nạp thêm Credits nhé!')
-      return
-    }
-
-    // Lắng nghe sự kiện sau khi in hoàn tất (user bấm Print trên trình duyệt)
-    const afterPrintHandler = () => {
-      window.removeEventListener('afterprint', afterPrintHandler)
-      const remaining = userCredits - 1
-      updateCredits(remaining)
-      setExportMessage(`Đã in hoàn tất! (Trừ 1 Credit, còn lại ${remaining})`)
-      setTimeout(() => setExportMessage(''), 3500)
-    }
-
-    window.addEventListener('afterprint', afterPrintHandler)
-    window.print()
-  }
-
   // Danh sách các ô hiển thị cho bảng xem trước
   const totalCells = rows * cols
   const cellsArray = Array.from({ length: totalCells }, (_, index) => index)
@@ -1043,28 +1021,6 @@ function App() {
                   : 'Xuất giấy kẻ ô trống (.docx)'}
               </>
             )}
-          </button>
-
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={handlePrint}
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="6 9 6 2 18 2 18 9" />
-              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-              <rect x="6" y="14" width="12" height="8" />
-            </svg>
-            In nhanh từ trình duyệt
           </button>
 
           {/* Nút nhanh để tạo giấy kẻ ô trống tự viết */}
