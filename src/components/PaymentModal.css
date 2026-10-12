@@ -671,3 +671,42 @@
 .btn-success-close:hover {
   background: #1d4ed8;
 }
+
+/* Tối ưu hóa cho màn hình điện thoại (Mobile) */
+@media (max-width: 640px) {
+  .modal-backdrop {
+    padding: 10px;
+  }
+
+  .payment-modal {
+    padding: 20px 16px;
+    max-height: 95vh;
+  }
+
+  .plans-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .payment-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .qr-image-wrap img {
+    max-width: 200px;
+  }
+
+  .bank-details-card {
+    padding: 12px;
+  }
+
+  .bank-row {
+    font-size: 13px;
+  }
+
+  .btn-confirm-paid {
+    font-size: 13px;
+    padding: 12px 14px;
+  }
+}

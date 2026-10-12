@@ -211,3 +211,26 @@
 .btn-switch-tab:hover {
   text-decoration: underline;
 }
+
+@media (max-width: 480px) {
+  .auth-backdrop {
+    padding: 12px;
+  }
+
+  .auth-modal {
+    padding: 22px 18px;
+  }
+
+  .auth-header h2 {
+    font-size: 18px;
+  }
+
+  .auth-subtitle {
+    font-size: 12px;
+  }
+
+  .btn-google-login {
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+}

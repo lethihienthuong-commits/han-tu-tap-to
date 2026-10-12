@@ -1313,12 +1313,237 @@
   }
 }
 
-/* Responsive cho màn hình nhỏ hơn */
+/* ========================================================
+   TỐI ƯU HÓA TOÀN DIỆN CHO THIẾT BỊ DI ĐỘNG (MOBILE & TABLET)
+   ======================================================== */
 @media (max-width: 768px) {
+  /* 1. Header & thanh công cụ trên cùng */
+  .control-panel {
+    padding: 12px 14px;
+    position: static; /* Không chiếm cố định màn hình nhỏ để tăng không gian xem */
+  }
+
+  .panel-brand {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .brand-left-group {
+    justify-content: flex-start;
+  }
+
+  .brand-logo {
+    width: 38px;
+    height: 38px;
+    font-size: 22px;
+    border-radius: 6px;
+  }
+
+  .panel-brand h1 {
+    font-size: 18px;
+  }
+
+  .brand-text-wrap .subtitle {
+    font-size: 11px;
+    white-space: normal;
+    max-width: 100%;
+    line-height: 1.35;
+  }
+
+  /* Nhóm nút bên phải trên mobile: dàn đều cân đối */
+  .brand-right-actions {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 8px;
+    margin-left: 0;
+  }
+
+  .user-credits-badge {
+    padding: 4px 8px;
+    font-size: 11px;
+    gap: 5px;
+  }
+
+  .credits-val {
+    font-size: 11px;
+  }
+
+  .vip-badge-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .btn-login-header {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+
+  .user-profile-badge {
+    padding: 2px 6px 2px 3px;
+    font-size: 11px;
+  }
+
+  .user-name-text {
+    max-width: 80px;
+  }
+
+  /* 2. Thẻ chỉnh sửa Thương hiệu */
+  .vip-settings-card {
+    padding: 12px;
+  }
+
+  .vip-settings-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .vip-settings-header h3 {
+    font-size: 13px;
+  }
+
+  .vip-settings-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .vip-inputs-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* 3. Khu vực nạp đoạn văn từ vựng */
+  .vip-batch-section {
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .vip-batch-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .vip-batch-actions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .btn-vip-upload,
+  .btn-vip-dedup,
+  .btn-vip-clear,
+  .btn-vip-restore {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .batch-chips-bar {
+    padding: 6px 8px;
+  }
+
+  .batch-chip {
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+
+  /* 4. Khung cài đặt ô lưới & font chữ */
+  .controls-wrapper {
+    gap: 10px;
+  }
+
+  .input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  /* Các ô nhập phủ rộng phù hợp trên mobile */
+  .input-group:nth-child(1),
+  .input-group:nth-child(2),
+  .input-group:nth-child(3),
+  .input-group:nth-child(4),
+  .input-group:nth-child(5),
+  .input-group:nth-child(6),
+  .input-group:nth-child(7),
+  .design-blueprint-group {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  .input-group:nth-child(1) input,
+  .input-group:nth-child(2) input,
+  .input-group:nth-child(3) input,
+  .input-group:nth-child(4) select,
+  .input-group:nth-child(5) .size-segmented-control,
+  .input-group:nth-child(6) .row-col-inputs {
+    width: 100% !important;
+  }
+
+  /* Nhóm nút hành động xuất Word */
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .action-buttons .btn {
+    width: 100%;
+    justify-content: center;
+    height: 44px;
+    font-size: 14px;
+  }
+
+  /* 5. Khung xem trước A4 (Preview) trên mobile */
+  .preview-container {
+    padding: 12px 8px 32px;
+    overflow-x: auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .preview-hint {
+    font-size: 11px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
   .a4-sheet {
     width: 100%;
+    max-width: 100%;
     min-height: auto;
-    padding: 16px;
+    padding: 12px 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .sheet-title {
+    font-size: 15px;
+  }
+
+  .header-motto {
+    font-size: 11px;
+  }
+
+  .sample-char {
+    font-size: 26px;
+  }
+
+  .sample-pinyin-text {
+    font-size: 13px;
+  }
+
+  .notes-label {
+    font-size: 11px;
+  }
+
+  .sheet-footer {
+    font-size: 9px;
+    margin-top: 10px;
+    padding-top: 6px;
   }
 }
 
