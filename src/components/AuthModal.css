@@ -19,6 +19,10 @@
   border-radius: 16px;
   width: 100%;
   max-width: 440px;
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   position: relative;
   padding: 28px 30px;
   box-sizing: border-box;

@@ -1520,10 +1520,14 @@ html, body {
 
   /* 5. Khung xem trước A4 (Preview) trên mobile */
   .preview-container {
-    padding: 12px 8px 32px;
+    padding: 12px 6px calc(24px + env(safe-area-inset-bottom, 0px));
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     width: 100%;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .preview-hint {
@@ -1536,8 +1540,9 @@ html, body {
     width: 100%;
     max-width: 100%;
     min-height: auto;
-    padding: 12px 10px;
+    padding: 14px 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
   }
 
   .sheet-title {
@@ -1564,19 +1569,70 @@ html, body {
     font-size: 9px;
     margin-top: 10px;
     padding-top: 6px;
+    flex-wrap: wrap;
+    gap: 4px;
+    line-height: 1.4;
+  }
+}
+
+/* Tối ưu hóa bổ sung cho màn hình điện thoại siêu nhỏ hoặc In-App browser (Facebook/Zalo) */
+@media screen and (max-width: 480px) {
+  .control-panel {
+    padding: 10px 10px;
+  }
+
+  .panel-brand h1 {
+    font-size: 16px;
+  }
+
+  .brand-logo {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  .brand-right-actions {
+    gap: 6px;
+  }
+
+  .user-credits-badge,
+  .vip-badge-btn,
+  .btn-login-header {
+    padding: 3px 6px;
+    font-size: 10px;
+  }
+
+  .input-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .candidate-card {
+    min-width: 46px;
+    height: 50px;
+    padding: 2px 4px;
+  }
+
+  .candidate-char {
+    font-size: 18px;
+  }
+
+  .candidate-pinyin {
+    font-size: 10px;
   }
 }
 
 /* Footer chân trang website */
 .app-global-footer {
   text-align: center;
-  padding: 18px 24px calc(18px + env(safe-area-inset-bottom, 0px));
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
   background: #ffffff;
   border-top: 1px solid #e2e8f0;
-  font-size: 13px;
+  font-size: 12px;
   color: #64748b;
   margin-top: auto;
   box-sizing: border-box;
+  line-height: 1.5;
 }
 
 .app-global-footer strong {
