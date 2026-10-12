@@ -659,6 +659,11 @@
   width: 200px;
 }
 
+.input-group:nth-child(7) select,
+.blueprint-select { /* Bản thiết kế */
+  width: 210px;
+}
+
 .input-group label {
   font-size: 13px;
   font-weight: 600;

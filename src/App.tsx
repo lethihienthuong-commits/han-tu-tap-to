@@ -81,6 +81,8 @@ function App() {
   // Bố cục dòng và cột
   const [rows, setRows] = useState<number>(14)
   const [cols, setCols] = useState<number>(10)
+  // Bản thiết kế: số dòng có chữ mẫu (0 nghĩa là toàn bộ các dòng đều có chữ tô)
+  const [charRowLimit, setCharRowLimit] = useState<number>(0)
 
   // --- TÍNH NĂNG VIP 1: Nhập nhiều chữ / Danh sách từ vựng ---
   const [isVipMode, setIsVipMode] = useState<boolean>(true) // Bật sẵn chế độ trải nghiệm thử
@@ -339,6 +341,7 @@ function App() {
           logoDataUrl: logoDataUrl || undefined,
         },
         multiPageItems: willExportMulti ? effectiveBatchItems : undefined,
+        charRowLimit: charRowLimit > 0 ? charRowLimit : undefined,
       })
 
       // Trừ credits tương ứng với số trang đã xuất
@@ -716,13 +719,18 @@ function App() {
               </div>
             </div>
 
-            {/* 6. Cấu hình số dòng và số cột (Đặt ở cuối hàng cùng với Chữ Hán) */}
+            {/* 6. Cấu hình số dòng và số cột */}
             <div className="input-group grid-setup-group">
               <label>Bố cục giấy</label>
               <div className="row-col-inputs">
                 <select
                   value={rows}
-                  onChange={(e) => setRows(Number(e.target.value))}
+                  onChange={(e) => {
+                    const newRows = Number(e.target.value)
+                    setRows(newRows)
+                    // Nếu số dòng có chữ vượt quá số dòng trang thì chỉnh lại
+                    if (charRowLimit > newRows) setCharRowLimit(newRows)
+                  }}
                   aria-label="Số dòng"
                 >
                   <option value={9}>9 dòng (Ô to)</option>
@@ -747,6 +755,26 @@ function App() {
                   <option value={16}>16 ô / dòng</option>
                 </select>
               </div>
+            </div>
+
+            {/* 7. Tab Bản thiết kế: Cho phép chọn số dòng có chữ, các dòng còn lại là ô kẻ trống */}
+            <div className="input-group design-blueprint-group">
+              <label>Bản thiết kế</label>
+              <select
+                value={charRowLimit}
+                onChange={(e) => setCharRowLimit(Number(e.target.value))}
+                className="blueprint-select"
+                title="Chọn số hàng có chữ mẫu, các hàng bên dưới sẽ để trống hoàn toàn để học viên tự viết tay"
+              >
+                <option value={0}>Tất cả các dòng ({rows} dòng có chữ)</option>
+                <option value={1}>1 dòng chữ mẫu • {rows - 1} dòng ô trống</option>
+                <option value={2}>2 dòng chữ mẫu • {rows - 2} dòng ô trống</option>
+                <option value={3}>3 dòng chữ mẫu • {rows - 3} dòng ô trống</option>
+                <option value={4}>4 dòng chữ mẫu • {rows - 4} dòng ô trống</option>
+                {rows >= 9 && <option value={5}>5 dòng chữ mẫu • {rows - 5} dòng ô trống</option>}
+                {rows >= 14 && <option value={7}>7 dòng chữ mẫu • {rows - 7} dòng ô trống</option>}
+                {rows >= 22 && <option value={11}>11 dòng chữ mẫu • {rows - 11} dòng ô trống</option>}
+              </select>
             </div>
           </div>
 
@@ -940,14 +968,22 @@ function App() {
               gridTemplateColumns: `repeat(${cols}, 1fr)`,
             }}
           >
-            {cellsArray.map((idx) => (
-              <TianzigeBox
-                key={idx}
-                char={previewItem.char}
-                fontFamily={currentFont.fontFamily}
-                charSize={charSize}
-              />
-            ))}
+            {cellsArray.map((idx) => {
+              // Tính số hàng hiện tại của ô (0-indexed)
+              const rowIndex = Math.floor(idx / cols)
+              // Nếu charRowLimit > 0 thì chỉ hiển thị chữ trong các hàng đầu, các hàng sau để trống
+              const isCharCell = charRowLimit === 0 || rowIndex < charRowLimit
+              const displayChar = isCharCell ? previewItem.char : ''
+
+              return (
+                <TianzigeBox
+                  key={idx}
+                  char={displayChar}
+                  fontFamily={currentFont.fontFamily}
+                  charSize={charSize}
+                />
+              )
+            })}
           </div>
 
           {/* Khoảng không gian trống phía dưới tự động điền các hàng dấu chấm để ghi chú thêm */}
