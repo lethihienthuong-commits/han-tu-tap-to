@@ -481,14 +481,23 @@ export async function exportToWord({
 
   try {
     saveAs(blob, fileName)
-  } catch {
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = fileName
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+    return true
+  } catch (err) {
+    try {
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = fileName
+      document.body.appendChild(link)
+      link.click()
+      setTimeout(() => {
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+      }, 500)
+      return true
+    } catch (fallbackErr) {
+      console.error('Không thể lưu file về máy:', fallbackErr)
+      throw new Error('Không thể tải file về máy của bạn. Trình duyệt có thể đã chặn tải xuống.')
+    }
   }
 }
