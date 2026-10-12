@@ -52,7 +52,7 @@ function generateTianzigeImage(
 
   // 2 đường kẻ nét đứt chia 4 phần (chữ thập)
   ctx.setLineDash([6, 6])
-  ctx.lineWidth = 1.5
+  ctx.lineWidth = 1.2
   ctx.strokeStyle = gridColor
   ctx.beginPath()
   // Đường ngang
@@ -61,6 +61,11 @@ function generateTianzigeImage(
   // Đường dọc
   ctx.moveTo(size / 2, 0)
   ctx.lineTo(size / 2, size)
+  // 2 đường chéo (Mễ Tự Cách)
+  ctx.moveTo(0, 0)
+  ctx.lineTo(size, size)
+  ctx.moveTo(size, 0)
+  ctx.lineTo(0, size)
   ctx.stroke()
 
   // Chữ Hán màu xám nhạt để tập tô theo cỡ chữ và font được chọn (nếu có chữ)

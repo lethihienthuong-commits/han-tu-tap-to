@@ -119,6 +119,26 @@ export const TianzigeBox: React.FC<TianzigeBoxProps> = ({
           strokeDasharray="4,4"
         />
 
+        {/* 2 đường kẻ chéo nét đứt tạo chuẩn ô Mễ Tự Cách (米字格) */}
+        <line
+          x1="0"
+          y1="0"
+          x2="100"
+          y2="100"
+          stroke={gridColor}
+          strokeWidth="0.8"
+          strokeDasharray="4,4"
+        />
+        <line
+          x1="100"
+          y1="0"
+          x2="0"
+          y2="100"
+          stroke={gridColor}
+          strokeWidth="0.8"
+          strokeDasharray="4,4"
+        />
+
         {/* Chữ Hán màu xám nhạt để tập tô (nếu có) */}
         {char && (
           <text
