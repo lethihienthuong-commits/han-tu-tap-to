@@ -481,7 +481,8 @@ function App() {
         return
       }
       console.error('Lỗi khi xuất file Word:', error)
-      alert('Có lỗi xảy ra khi tạo file Word. File chưa được tải nên hệ thống KHÔNG trừ credit nào của bạn!')
+      const errorMsg = error?.message || 'Có lỗi xảy ra khi tạo file Word. File chưa được tải nên hệ thống KHÔNG trừ credit nào của bạn!'
+      alert(errorMsg)
     } finally {
       setIsExporting(false)
     }

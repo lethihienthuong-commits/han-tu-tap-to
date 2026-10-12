@@ -479,8 +479,18 @@ export async function exportToWord({
       ? `Tap_to_chu_${char}.docx`
       : `Giay_ke_o_tu_luyen_viet_A4.docx`
 
-  // 1. Nếu trình duyệt hỗ trợ Native Save Picker (Chrome/Edge/Cốc Cốc), cho phép người dùng chọn nơi lưu và xác nhận đã lưu
-  if ('showSaveFilePicker' in window) {
+  // Tạo blob rõ ràng với MIME type chuẩn của docx
+  const docxBlob = new Blob([blob], {
+    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  })
+
+  // Kiểm tra môi trường mobile / Webview (Facebook, Zalo, TikTok, Messenger, iOS, Android)
+  const ua = navigator.userAgent || ''
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua)
+  const isInAppBrowser = /FBAN|FBAV|Instagram|Line|musical_ly|ByteLocale|Snapchat|MicroMessenger|Zalo/i.test(ua)
+
+  // 1. Nếu trên máy tính (desktop) và trình duyệt hỗ trợ Native Save Picker, cho phép chọn nơi lưu
+  if (!isMobile && 'showSaveFilePicker' in window) {
     try {
       const handle = await (window as any).showSaveFilePicker({
         suggestedName: fileName,
@@ -494,38 +504,61 @@ export async function exportToWord({
         ],
       })
       const writable = await handle.createWritable()
-      await writable.write(blob)
+      await writable.write(docxBlob)
       await writable.close()
       return true
     } catch (pickerErr: any) {
-      // Nếu người dùng bấm "Cancel" / "Hủy" trên cửa sổ lưu file thì không lưu và không trừ credits
       if (pickerErr.name === 'AbortError') {
         throw new Error('USER_CANCELLED')
       }
-      // Nếu lỗi khác, fallback sang cơ chế download tự động
+      // Fallback xuống cơ chế tải chuẩn nếu picker bị từ chối
     }
   }
 
-  // 2. Cơ chế tải tự động chuẩn FileSaver
+  // 2. Kỹ thuật tải chuẩn và tương thích tối đa cho Mobile (đặc biệt In-App WebView & Safari / Chrome Mobile)
   try {
-    saveAs(blob, fileName)
-    return true
-  } catch (err) {
-    try {
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = fileName
-      document.body.appendChild(link)
-      link.click()
-      setTimeout(() => {
+    const url = URL.createObjectURL(docxBlob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = fileName
+    link.target = '_blank'
+    link.rel = 'noopener noreferrer'
+    link.style.display = 'none'
+
+    document.body.appendChild(link)
+    link.click()
+
+    setTimeout(() => {
+      try {
         document.body.removeChild(link)
         URL.revokeObjectURL(url)
-      }, 500)
+      } catch (cleanErr) {
+        // ignore
+      }
+    }, 4000)
+
+    // Nếu đang trong In-App Browser của Facebook/Zalo, nhiều trường hợp không cho tải blob trực tiếp
+    // Chúng ta hỗ trợ thêm saveAs để tăng cường khả năng kích hoạt
+    try {
+      saveAs(docxBlob, fileName)
+    } catch (saveAsErr) {
+      // Đã có anchor click ở trên bảo đảm
+    }
+
+    return true
+  } catch (err: any) {
+    console.warn('Anchor download failed, fallback to saveAs:', err)
+    try {
+      saveAs(docxBlob, fileName)
       return true
     } catch (fallbackErr) {
       console.error('Không thể lưu file về máy:', fallbackErr)
-      throw new Error('Không thể tải file về máy của bạn. Trình duyệt có thể đã chặn tải xuống.')
+      throw new Error(
+        isInAppBrowser
+          ? 'Trình duyệt Facebook / Zalo chặn tải file. Vui lòng bấm vào dấu 3 chấm góc trên bên phải (⋮ hoặc ⋯) và chọn "Mở bằng trình duyệt" (Chrome / Safari) để tải file Word nhé!'
+          : 'Không thể tải file về máy. Vui lòng kiểm tra quyền tải xuống của trình duyệt.'
+      )
     }
   }
 }
+
