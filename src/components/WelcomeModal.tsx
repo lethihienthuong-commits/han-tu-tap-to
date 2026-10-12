@@ -29,7 +29,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
         {/* Banner Hero chuẩn quốc tế */}
         <div className="welcome-hero">
           <div className="welcome-hero-badge">
-            <span className="hero-badge-icon">✨</span> NỀN TẢNG LUYỆN CHỮ HÁN CHUYÊN NGHIỆP
+            <span className="hero-badge-icon">✨</span> NỀN TẢNG TẠO NÊN NHỮNG TRANG LUYỆN VIẾT CHỮ HÁN CHUYÊN NGHIỆP THEO NHU CẦU CÁ NHÂN
           </div>
           <h2>
             Chào mừng bạn đến với <span className="text-gradient">Hán Tự Tập Tô</span>
