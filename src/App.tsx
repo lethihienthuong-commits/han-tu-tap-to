@@ -757,24 +757,40 @@ function App() {
               </div>
             </div>
 
-            {/* 7. Tab Bản thiết kế: Cho phép chọn số dòng có chữ, các dòng còn lại là ô kẻ trống */}
+            {/* 7. Tab Bản thiết kế: Cho phép điền số dòng có chữ, không vượt quá tổng số dòng */}
             <div className="input-group design-blueprint-group">
-              <label>Bản thiết kế</label>
-              <select
-                value={charRowLimit}
-                onChange={(e) => setCharRowLimit(Number(e.target.value))}
-                className="blueprint-select"
-                title="Chọn số hàng có chữ mẫu, các hàng bên dưới sẽ để trống hoàn toàn để học viên tự viết tay"
-              >
-                <option value={0}>Tất cả các dòng ({rows} dòng có chữ)</option>
-                <option value={1}>1 dòng chữ mẫu • {rows - 1} dòng ô trống</option>
-                <option value={2}>2 dòng chữ mẫu • {rows - 2} dòng ô trống</option>
-                <option value={3}>3 dòng chữ mẫu • {rows - 3} dòng ô trống</option>
-                <option value={4}>4 dòng chữ mẫu • {rows - 4} dòng ô trống</option>
-                {rows >= 9 && <option value={5}>5 dòng chữ mẫu • {rows - 5} dòng ô trống</option>}
-                {rows >= 14 && <option value={7}>7 dòng chữ mẫu • {rows - 7} dòng ô trống</option>}
-                {rows >= 22 && <option value={11}>11 dòng chữ mẫu • {rows - 11} dòng ô trống</option>}
-              </select>
+              <label htmlFor="blueprintRowsInput" title="Nhập số dòng có chữ mẫu, các dòng còn lại là ô kẻ trống">
+                Bản thiết kế (Số dòng có chữ)
+              </label>
+              <div className="blueprint-input-wrap">
+                <input
+                  id="blueprintRowsInput"
+                  type="number"
+                  min={0}
+                  max={rows}
+                  value={charRowLimit === 0 ? '' : charRowLimit}
+                  onChange={(e) => {
+                    const valStr = e.target.value.trim()
+                    if (valStr === '') {
+                      // Nếu để trống thì coi như hiện đầy đủ cả trang
+                      setCharRowLimit(0)
+                      return
+                    }
+                    const num = parseInt(valStr, 10)
+                    if (isNaN(num) || num < 0) {
+                      setCharRowLimit(0)
+                    } else if (num > rows) {
+                      // Tự động chặn không cho vượt quá tổng số dòng của trang
+                      setCharRowLimit(rows)
+                    } else {
+                      setCharRowLimit(num)
+                    }
+                  }}
+                  placeholder={`Tất cả (${rows} dòng)`}
+                  className="blueprint-number-input"
+                />
+                <span className="blueprint-max-hint">/ {rows} dòng</span>
+              </div>
             </div>
           </div>
 
