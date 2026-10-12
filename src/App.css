@@ -661,7 +661,7 @@
 
 .input-group:nth-child(7) .blueprint-input-wrap,
 .design-blueprint-group .blueprint-input-wrap { /* Bản thiết kế */
-  width: 175px;
+  width: 250px;
   display: flex;
   align-items: center;
   position: relative;
@@ -669,15 +669,15 @@
 
 .blueprint-number-input {
   width: 100% !important;
-  padding-right: 65px !important;
+  padding-right: 75px !important;
   font-weight: 600;
   color: #1e293b;
 }
 
 .blueprint-max-hint {
   position: absolute;
-  right: 10px;
-  font-size: 11px;
+  right: 12px;
+  font-size: 12px;
   font-weight: 600;
   color: #64748b;
   pointer-events: none;
