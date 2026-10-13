@@ -30,7 +30,8 @@ function generateTianzigeImage(
   charSize: CharSize = 'medium',
   size = 200,
   charColor = '#c0c0c0',
-  gridColor = '#a0a0a0'
+  gridColor = '#a0a0a0',
+  fontWeight: number | string = 400
 ): Uint8Array {
   const canvas = document.createElement('canvas')
   canvas.width = size
@@ -73,7 +74,8 @@ function generateTianzigeImage(
     ctx.setLineDash([])
     ctx.fillStyle = charColor
     const factor = CHAR_SIZE_MAP[charSize].canvasFactor
-    ctx.font = `${Math.floor(size * factor)}px ${fontFamily}`
+    const weightPrefix = fontWeight ? `${fontWeight} ` : ''
+    ctx.font = `${weightPrefix}${Math.floor(size * factor)}px ${fontFamily}`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     // Căn giữa ô vuông
@@ -207,9 +209,25 @@ function createPageSection(
   charRowLimit?: number
 ) {
   // 1. Tạo hình ảnh ô có chữ tập tô
-  const imageWithCharBytes = generateTianzigeImage(char, fontOpt.fontFamily, charSize)
+  const imageWithCharBytes = generateTianzigeImage(
+    char,
+    fontOpt.fontFamily,
+    charSize,
+    200,
+    '#c0c0c0',
+    '#a0a0a0',
+    fontOpt.fontWeight
+  )
   // 2. Tạo hình ảnh ô trống (dành cho các hàng sau để học viên tự viết tay)
-  const imageEmptyBytes = generateTianzigeImage('', fontOpt.fontFamily, charSize)
+  const imageEmptyBytes = generateTianzigeImage(
+    '',
+    fontOpt.fontFamily,
+    charSize,
+    200,
+    '#c0c0c0',
+    '#a0a0a0',
+    fontOpt.fontWeight
+  )
   const boxPixelSize = Math.floor(480 / cols)
 
   const tableRows: TableRow[] = []

@@ -450,6 +450,30 @@ function App() {
     return { char: selectedChar, pinyin: selectedPinyin }
   }, [isVipMode, parsedBatchItems, effectiveBatchItems, excludedIndices, activePageIndex, selectedChar, selectedPinyin])
 
+  // Bộ đếm cập nhật font để buộc React tạo lại DOM và ép trình duyệt di động vẽ lại bản in ngay
+  const [fontUpdateTick, setFontUpdateTick] = useState<number>(0)
+
+  useEffect(() => {
+    // 1. Tăng tick để buộc React gán key mới và tạo lại toàn bộ DOM SVG / Text
+    setFontUpdateTick((prev) => prev + 1)
+
+    // 2. Kích hoạt trình duyệt tải glyph cho chữ hiện tại
+    if (typeof document !== 'undefined' && 'fonts' in document) {
+      const charToPreload = previewItem.char || '好'
+      // Yêu cầu nạp font theo fontFamily đã chọn
+      document.fonts
+        .load(`24px ${currentFont.fontFamily}`, charToPreload)
+        .then(() => {
+          setFontUpdateTick((prev) => prev + 1)
+        })
+        .catch(() => {})
+
+      document.fonts.ready.then(() => {
+        setFontUpdateTick((prev) => prev + 1)
+      })
+    }
+  }, [fontId, previewItem.char])
+
   // Xử lý xuất file Word (.docx)
   const handleExportWord = async () => {
     const willExportMulti = isVipMode && effectiveBatchItems.length > 1
@@ -889,7 +913,10 @@ function App() {
               <select
                 id="fontSelect"
                 value={fontId}
-                onChange={(e) => setFontId(e.target.value)}
+                onChange={(e) => {
+                  setFontId(e.target.value)
+                  setFontUpdateTick((prev) => prev + 1)
+                }}
                 className="font-select"
               >
                 {FONT_OPTIONS.map((f) => (
@@ -1034,7 +1061,13 @@ function App() {
                     onClick={() => handleSelectCandidate(item)}
                     title={`Chọn chữ ${item.char} (${item.pinyin})`}
                   >
-                    <span className="candidate-char" style={{ fontFamily: currentFont.fontFamily }}>
+                    <span
+                      className="candidate-char"
+                      style={{
+                        fontFamily: currentFont.fontFamily,
+                        fontWeight: currentFont.fontWeight || 'normal',
+                      }}
+                    >
                       {item.char}
                     </span>
                     <span className="candidate-pinyin">{item.pinyin}</span>
@@ -1107,6 +1140,32 @@ function App() {
         </div>
       </header>
 
+      {/* Container ẩn để ép trình duyệt nạp sẵn tất cả glyph các font chữ cho thiết bị di động */}
+      <div
+        style={{
+          position: 'absolute',
+          left: '-9999px',
+          top: '-9999px',
+          visibility: 'hidden',
+          pointerEvents: 'none',
+          height: 0,
+          overflow: 'hidden',
+        }}
+        aria-hidden="true"
+      >
+        {FONT_OPTIONS.map((f) => (
+          <span
+            key={f.id}
+            style={{
+              fontFamily: f.fontFamily,
+              fontWeight: f.fontWeight || 400,
+            }}
+          >
+            {previewItem.char || '好'}
+          </span>
+        ))}
+      </div>
+
       {/* Khu vực xem trước tờ giấy A4 (A4 Preview) */}
       <main className="preview-container">
         <div className="preview-hint no-print">
@@ -1153,6 +1212,7 @@ function App() {
               <>
                 <div className="sample-row">
                   <span
+                    key={`sample_${fontId}_${previewItem.char}_${fontUpdateTick}`}
                     className="sample-char"
                     style={{
                       fontFamily: currentFont.fontFamily,
@@ -1179,6 +1239,7 @@ function App() {
 
           {/* Lưới các ô vuông tập tô chia 4 phần */}
           <div
+            key={`grid_${fontId}_${charSize}_${previewItem.char}_${rows}_${cols}_${fontUpdateTick}`}
             className="tianzige-grid"
             style={{
               gridTemplateColumns: `repeat(${cols}, 1fr)`,
@@ -1193,7 +1254,7 @@ function App() {
 
               return (
                 <TianzigeBox
-                  key={idx}
+                  key={`${idx}_${fontId}_${charSize}_${displayChar}_${fontUpdateTick}`}
                   char={displayChar}
                   fontFamily={currentFont.fontFamily}
                   fontWeight={currentFont.fontWeight}

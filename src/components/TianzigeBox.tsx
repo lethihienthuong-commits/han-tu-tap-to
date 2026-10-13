@@ -15,7 +15,7 @@ export const FONT_OPTIONS: FontOption[] = [
   {
     id: 'yahei',
     name: 'Microsoft YaHei (Bút bi - Nét đều)',
-    fontFamily: '"Noto Sans SC", "Microsoft YaHei", "微软雅黑", sans-serif',
+    fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'Heiti SC', sans-serif",
     docxFont: 'Microsoft YaHei',
     desc: 'Nét đều, dễ tô bằng bút bi / bút mực',
     fontWeight: 400,
@@ -23,7 +23,7 @@ export const FONT_OPTIONS: FontOption[] = [
   {
     id: 'kaiti',
     name: 'KaiTi (Khải thư - Chuẩn luyện viết)',
-    fontFamily: '"LXGW WenKai TC", "LXGW WenKai", "Ma Shan Zheng", "KaiTi", "STKaiti", "Kaiti SC", "楷体", serif',
+    fontFamily: "'LXGW WenKai', 'LXGW WenKai TC', 'Ma Shan Zheng', 'Kaiti SC', 'STKaiti', 'KaiTi', '楷体', serif",
     docxFont: 'KaiTi',
     desc: 'Nét bút khải thư chuẩn mực để luyện viết',
     fontWeight: 400,
@@ -31,7 +31,7 @@ export const FONT_OPTIONS: FontOption[] = [
   {
     id: 'simhei',
     name: 'SimHei (Hắc thể - Nét đậm)',
-    fontFamily: '"Noto Sans SC", "SimHei", "黑体", sans-serif',
+    fontFamily: "'Noto Sans SC', 'PingFang SC', 'Heiti SC', 'SimHei', '黑体', sans-serif",
     docxFont: 'SimHei',
     desc: 'Nét dày, vuông vắn, rõ ràng',
     fontWeight: 900,
@@ -39,7 +39,7 @@ export const FONT_OPTIONS: FontOption[] = [
   {
     id: 'simsun',
     name: 'SimSun (Tống thể - Cổ điển)',
-    fontFamily: '"Noto Serif SC", "SimSun", "宋体", serif',
+    fontFamily: "'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', '宋体', serif",
     docxFont: 'SimSun',
     desc: 'Font sách in cổ điển có chân',
     fontWeight: 400,
@@ -47,7 +47,7 @@ export const FONT_OPTIONS: FontOption[] = [
   {
     id: 'fangsong',
     name: 'FangSong (Phảng Tống / Tiêu đài)',
-    fontFamily: '"ZCOOL XiaoWei", "FangSong", "仿宋", "Noto Serif SC", serif',
+    fontFamily: "'ZCOOL XiaoWei', 'STFangsong', 'FangSong', '仿宋', 'Noto Serif SC', serif",
     docxFont: 'FangSong',
     desc: 'Nét thanh mảnh, tao nhã',
     fontWeight: 400,
@@ -87,6 +87,7 @@ export const TianzigeBox: React.FC<TianzigeBoxProps> = ({
   return (
     <div className="tianzige-wrapper">
       <svg
+        key={`svg_${char}_${fontFamily}_${fontWeight}_${charSize}`}
         viewBox="0 0 100 100"
         className="tianzige-svg"
         xmlns="http://www.w3.org/2000/svg"
@@ -150,14 +151,13 @@ export const TianzigeBox: React.FC<TianzigeBoxProps> = ({
         {/* Chữ Hán màu xám nhạt để tập tô (nếu có) */}
         {char && (
           <text
+            key={`txt_${char}_${fontFamily}_${fontWeight}_${charSize}`}
             x="50"
             y="52"
             dominantBaseline="central"
             textAnchor="middle"
             fill={charColor}
             fontSize={fontSize}
-            fontFamily={fontFamily}
-            fontWeight={fontWeight}
             style={{ fontFamily, fontWeight }}
           >
             {char}
