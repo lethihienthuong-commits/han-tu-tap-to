@@ -138,9 +138,9 @@ function dataUrlToBytes(dataUrl: string): Uint8Array {
  * Tạo các đoạn văn bản có hàng dấu chấm để người học ghi chú thêm vào khoảng trống phía dưới
  */
 function createNotesParagraphs(rows: number): Paragraph[] {
-  // Số dòng ghi chú tự động tính theo số dòng chữ đã chọn (9 dòng -> 4 dòng, 14 dòng -> 2 dòng, 22 dòng -> 1 dòng)
+  // Số dòng ghi chú tự động tính theo số dòng chữ đã chọn (9 dòng -> 3 dòng, 14 dòng -> 2 dòng, 22 dòng -> 1 dòng)
   let lineCount = 2
-  if (rows <= 9) lineCount = 4
+  if (rows <= 9) lineCount = 3
   else if (rows <= 14) lineCount = 2
   else lineCount = 1
 
@@ -149,7 +149,7 @@ function createNotesParagraphs(rows: number): Paragraph[] {
   // Dòng đầu tiên có chữ "Ghi chú: ........................"
   paragraphs.push(
     new Paragraph({
-      spacing: { before: 180, after: 100 },
+      spacing: { before: 100, after: 40 },
       tabStops: [
         {
           type: TabStopType.RIGHT,
@@ -161,7 +161,7 @@ function createNotesParagraphs(rows: number): Paragraph[] {
         new TextRun({
           text: 'Ghi chú: ',
           bold: true,
-          size: 20, // 10pt
+          size: 18, // 9pt
           font: 'Arial',
           color: '4B5563',
         }),
@@ -176,7 +176,7 @@ function createNotesParagraphs(rows: number): Paragraph[] {
   for (let i = 1; i < lineCount; i++) {
     paragraphs.push(
       new Paragraph({
-        spacing: { after: 120 },
+        spacing: { before: 0, after: 40 },
         tabStops: [
           {
             type: TabStopType.RIGHT,
@@ -232,7 +232,11 @@ function createPageSection(
       '#a0a0a0',
       fontOpt.fontWeight
     )
-  const boxPixelSize = Math.floor(480 / cols)
+  // Tính kích thước pixel của ô vuông để đảm bảo 100% vừa khít trọn vẹn trong 1 trang A4
+  const boxPixelSize = Math.min(
+    Math.floor(400 / cols), // Vừa vặn chiều ngang
+    Math.floor(540 / rows)  // Vừa vặn chiều dọc (không vượt quá 540px ~ 405pt)
+  )
 
   const tableRows: TableRow[] = []
   for (let r = 0; r < rows; r++) {
@@ -255,14 +259,15 @@ function createPageSection(
             right: { style: BorderStyle.NONE },
           },
           margins: {
-            top: 60,
-            bottom: 60,
-            left: 60,
-            right: 60,
+            top: 20,
+            bottom: 20,
+            left: 20,
+            right: 20,
           },
           children: [
             new Paragraph({
               alignment: AlignmentType.CENTER,
+              spacing: { before: 0, after: 0, line: 240 },
               children: [
                 new ImageRun({
                   data: currentBytes,
@@ -281,6 +286,7 @@ function createPageSection(
 
     tableRows.push(
       new TableRow({
+        cantSplit: true,
         children: cells,
       })
     )
@@ -299,8 +305,8 @@ function createPageSection(
           new ImageRun({
             data: logoBytes,
             transformation: {
-              width: 38,
-              height: 38,
+              width: 32,
+              height: 32,
             },
             type: 'png',
           })
@@ -315,7 +321,7 @@ function createPageSection(
       new TextRun({
         text: branding.centerName || 'LUYỆN VIẾT CHỮ HÁN',
         bold: true,
-        size: 24, // 12pt
+        size: 22, // 11pt
         font: 'Arial',
         color: 'B91C1C', // Đỏ đô sang trọng
       })
@@ -328,14 +334,14 @@ function createPageSection(
 
     headerParagraphs.push(
       new Paragraph({
-        spacing: { after: 60 },
+        spacing: { before: 0, after: 40 },
         tabStops: [{ type: TabStopType.RIGHT, position: 9600 }],
         children: [
           ...headerChildren,
           new TextRun({
             text: `\t${subInfo || branding.slogan || 'Có công mài sắt có ngày nên kim'}`,
             italics: true,
-            size: 18,
+            size: 16,
             font: 'Arial',
             color: '6B7280',
           }),
@@ -346,20 +352,20 @@ function createPageSection(
     // Tiêu đề mặc định
     headerParagraphs.push(
       new Paragraph({
-        spacing: { after: 120 },
+        spacing: { before: 0, after: 40 },
         tabStops: [{ type: TabStopType.RIGHT, position: 9600 }],
         children: [
           new TextRun({
             text: 'LUYỆN VIẾT CHỮ HÁN',
             bold: true,
-            size: 26,
+            size: 24,
             font: 'Arial',
             color: '1F2937',
           }),
           new TextRun({
             text: '\tCó công mài sắt có ngày nên kim',
             italics: true,
-            size: 20,
+            size: 18,
             font: 'Arial',
             color: '4B5563',
           }),
@@ -376,10 +382,10 @@ function createPageSection(
           height: 16838, // A4: 297mm
         },
         margin: {
-          top: 1000,
-          bottom: 1000,
-          left: 1100,
-          right: 1100,
+          top: 720,
+          bottom: 720,
+          left: 900,
+          right: 900,
         },
       },
     },
@@ -390,12 +396,12 @@ function createPageSection(
       ...(char
         ? [
             new Paragraph({
-              spacing: { after: 120 },
+              spacing: { before: 40, after: 20 },
               children: [
                 new TextRun({
                   text: char,
                   bold: true,
-                  size: 40,
+                  size: 36, // 18pt
                   font: fontOpt.docxFont,
                   color: '111827',
                 }),
@@ -403,7 +409,7 @@ function createPageSection(
                   ? [
                       new TextRun({
                         text: `   [ ${pinyin} ]`,
-                        size: 24,
+                        size: 22,
                         font: 'Arial',
                         color: '374151',
                       }),
@@ -412,12 +418,12 @@ function createPageSection(
               ],
             }),
             new Paragraph({
-              spacing: { after: 240 },
+              spacing: { before: 0, after: 60 },
               children: [
                 new TextRun({
                   text: 'Hướng dẫn: Tô theo nét chữ màu xám nhạt trong từng ô vuông bên dưới.',
                   italics: true,
-                  size: 18,
+                  size: 16, // 8pt
                   color: '6B7280',
                   font: 'Arial',
                 }),
@@ -426,12 +432,12 @@ function createPageSection(
           ]
         : [
             new Paragraph({
-              spacing: { after: 240 },
+              spacing: { before: 40, after: 60 },
               children: [
                 new TextRun({
                   text: 'Hướng dẫn: Giấy kẻ ô Điền Tự Cách chuẩn A4 để tự luyện viết chữ Hán theo ý muốn.',
                   italics: true,
-                  size: 20,
+                  size: 18,
                   color: '4B5563',
                   font: 'Arial',
                 }),
