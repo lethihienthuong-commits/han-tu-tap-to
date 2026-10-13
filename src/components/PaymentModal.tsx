@@ -48,7 +48,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const BANK_NAME = 'VPBank'
   const ACCOUNT_NO = '0969246788'
   const ACCOUNT_NAME = 'LE THI HIEN THUONG'
-  const HOTLINE_ZALO = '0969246788'
 
   // Tổng số credits nhận được từ gói
   const currentPlan = selectedPlan || defaultPlan
@@ -68,13 +67,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   }
 
   // Xử lý khi người dùng bấm "Tôi đã chuyển khoản":
-  // Chuyển sang màn hình "Chờ xác nhận đối soát", KHÔNG tự động cộng credits!
+  // Chuyển sang màn hình xác nhận đã gửi thông tin, KHÔNG tự cộng credits và KHÔNG qua Zalo
   const handleConfirmPaid = () => {
     setIsProcessing(true)
     setTimeout(() => {
       setIsProcessing(false)
       setStep('pending')
-    }, 800)
+    }, 600)
   }
 
   return (
@@ -294,14 +293,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   >
                     {isProcessing ? (
                       <>
-                        <span className="spinner-mini"></span> Đang kiểm tra giao dịch...
+                        <span className="spinner-mini"></span> Đang gửi xác nhận...
                       </>
                     ) : (
-                      `Tôi đã chuyển khoản / Thanh toán ngay (${selectedPlan.priceDisplay})`
+                      `Tôi đã chuyển khoản xong (${selectedPlan.priceDisplay})`
                     )}
                   </button>
                   <p className="payment-note">
-                    🔒 Hệ thống cộng Credits tự động sau khi giao dịch thành công. Nếu cần hỗ trợ hoặc báo lỗi, liên hệ Hotline / Zalo: <strong>0969246788 (có Zalo)</strong>.
+                    🔒 Vui lòng chuyển khoản đúng số tiền và nội dung chuyển khoản để hệ thống tự động nhận diện và cập nhật số dư.
                   </p>
                 </div>
               </div>
@@ -312,11 +311,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         {step === 'pending' && (
           <div className="pending-step">
             <div className="pending-icon-wrap">
-              <span className="pending-icon">⏳</span>
+              <span className="pending-icon">✅</span>
             </div>
-            <h2>Đang Chờ Xác Nhận Thanh Toán</h2>
+            <h2>Đã Tiếp Nhận Thông Tin Chuyển Khoản</h2>
             <p className="pending-desc">
-              Hệ thống đã tiếp nhận yêu cầu nạp <strong>{selectedPlan.name}</strong> ({selectedPlan.priceDisplay}).
+              Hệ thống đã ghi nhận yêu cầu nạp <strong>{selectedPlan.name}</strong> ({selectedPlan.priceDisplay}).
             </p>
 
             <div className="pending-info-card">
@@ -343,28 +342,27 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               </div>
               <div className="pending-row">
                 <span className="pending-label">Trạng thái:</span>
-                <span className="pending-status-badge">🟡 Đang đối soát giao dịch ngân hàng</span>
+                <span className="pending-status-badge">🟡 Chờ hệ thống ghi nhận biến động số dư</span>
               </div>
             </div>
 
             <div className="pending-note-box">
-              <p>
-                💡 <strong>Kích hoạt Credits nhanh nhất:</strong>
-              </p>
-              <p style={{ margin: '6px 0' }}>
-                Vui lòng gửi ảnh chụp màn hình chuyển khoản hoặc mã giao dịch <strong>{transactionCode}</strong> qua Zalo để nhân viên duyệt ngay trong 1 phút!
+              <p style={{ margin: 0, fontWeight: 500 }}>
+                Hệ thống sẽ kiểm tra và tự động cập nhật số dư <strong>+{totalPlanCredits} Credits</strong> vào tài khoản của bạn ngay khi tiền vào tài khoản ngân hàng.
               </p>
             </div>
 
             <div className="pending-actions">
-              <a
-                href={`https://zalo.me/${HOTLINE_ZALO}`}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-zalo-confirm"
+              <button
+                type="button"
+                className="btn-pending-done"
+                onClick={() => {
+                  setStep('select')
+                  onClose()
+                }}
               >
-                💬 Nhắn tin Zalo ({HOTLINE_ZALO}) kích hoạt tức thì ↗
-              </a>
+                Đóng thông báo
+              </button>
               <button
                 type="button"
                 className="btn-pending-back"

@@ -698,24 +698,25 @@
   margin: 0 auto;
 }
 
-.btn-zalo-confirm {
+.btn-pending-done {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: linear-gradient(135deg, #0068ff, #0052cc);
-  color: #ffffff !important;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
   font-size: 14px;
   font-weight: 700;
   padding: 13px 20px;
   border-radius: 8px;
-  text-decoration: none;
-  box-shadow: 0 4px 12px rgba(0, 104, 255, 0.3);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
   transition: all 0.2s ease;
 }
 
-.btn-zalo-confirm:hover {
-  background: linear-gradient(135deg, #0052cc, #003c99);
+.btn-pending-done:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
   transform: translateY(-1px);
 }
 
