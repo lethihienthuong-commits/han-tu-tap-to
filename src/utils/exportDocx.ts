@@ -583,14 +583,12 @@ export async function exportToWord({
     }
   }
 
-  // 2. Kỹ thuật tải chuẩn và tương thích tối đa cho Mobile (đặc biệt In-App WebView & Safari / Chrome Mobile)
+  // 2. Kỹ thuật tải chuẩn bằng Anchor link (chỉ fallback sang FileSaver khi anchor bị lỗi)
   try {
     const url = URL.createObjectURL(docxBlob)
     const link = document.createElement('a')
     link.href = url
     link.download = fileName
-    link.target = '_blank'
-    link.rel = 'noopener noreferrer'
     link.style.display = 'none'
 
     document.body.appendChild(link)
@@ -603,15 +601,7 @@ export async function exportToWord({
       } catch (cleanErr) {
         // ignore
       }
-    }, 4000)
-
-    // Nếu đang trong In-App Browser của Facebook/Zalo, nhiều trường hợp không cho tải blob trực tiếp
-    // Chúng ta hỗ trợ thêm saveAs để tăng cường khả năng kích hoạt
-    try {
-      saveAs(docxBlob, fileName)
-    } catch (saveAsErr) {
-      // Đã có anchor click ở trên bảo đảm
-    }
+    }, 2000)
 
     return true
   } catch (err: any) {

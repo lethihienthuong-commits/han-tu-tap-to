@@ -478,6 +478,7 @@ function App() {
 
   // Xử lý xuất file PDF (.pdf) - Chuẩn in A4 cố định 100% không bao giờ nhảy trang
   const handleExportPdf = async () => {
+    if (isExporting) return
     const willExportMulti = isVipMode && effectiveBatchItems.length > 1
     const pagesToExport = willExportMulti ? effectiveBatchItems.length : 1
 
@@ -564,6 +565,7 @@ function App() {
 
   // Xử lý xuất file Word (.docx)
   const handleExportWord = async () => {
+    if (isExporting) return
     const willExportMulti = isVipMode && effectiveBatchItems.length > 1
     const pagesToExport = willExportMulti ? effectiveBatchItems.length : 1
 

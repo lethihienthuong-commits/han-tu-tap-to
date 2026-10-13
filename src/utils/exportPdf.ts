@@ -381,14 +381,12 @@ export async function exportToPdf({
     }
   }
 
-  // 2. Kỹ thuật tải chuẩn bằng Anchor link + FileSaver cho mọi thiết bị di động
+  // 2. Kỹ thuật tải chuẩn bằng Anchor link (chỉ fallback sang FileSaver khi anchor bị lỗi)
   try {
     const url = URL.createObjectURL(pdfBlob)
     const link = document.createElement('a')
     link.href = url
     link.download = fileName
-    link.target = '_blank'
-    link.rel = 'noopener noreferrer'
     link.style.display = 'none'
 
     document.body.appendChild(link)
@@ -401,13 +399,7 @@ export async function exportToPdf({
       } catch (cleanErr) {
         // ignore
       }
-    }, 4000)
-
-    try {
-      saveAs(pdfBlob, fileName)
-    } catch {
-      // Đã có anchor link bảo đảm
-    }
+    }, 2000)
 
     return true
   } catch (err) {
