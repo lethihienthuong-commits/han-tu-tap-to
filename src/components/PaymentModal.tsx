@@ -1,17 +1,18 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   CREDIT_PLANS,
   PAYMENT_METHODS,
   type CreditPlan,
   type PaymentMethodType,
 } from '../utils/creditPlans'
+import { supabase, isSupabaseConfigured } from '../utils/supabaseClient'
 import './PaymentModal.css'
 
 interface PaymentModalProps {
   isOpen: boolean
   onClose: () => void
   currentCredits: number
-  currentUser: { name: string; email: string } | null
+  currentUser: { id?: string; name: string; email: string } | null
   onRequireLogin: () => void
   onPaymentSuccess: (addedCredits: number, planName: string) => void
 }
@@ -22,7 +23,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   currentCredits,
   currentUser,
   onRequireLogin,
-  onPaymentSuccess: _onPaymentSuccess,
+  onPaymentSuccess,
 }) => {
   const defaultPlan = CREDIT_PLANS && CREDIT_PLANS.length > 1 ? CREDIT_PLANS[1] : (CREDIT_PLANS[0] || {
     id: 'plan_teacher',
@@ -40,6 +41,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const [copiedField, setCopiedField] = useState<string>('')
   // Giữ mã giao dịch cố định trong suốt phiên mở modal
   const [transactionCode] = useState<string>(() => 'HT' + Math.floor(100000 + (Math.random() * 900000)))
+  const pollTimerRef = useRef<any>(null)
 
   if (!isOpen) return null
 
@@ -59,6 +61,69 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     ACCOUNT_NAME
   )}`
 
+  // 1. Khi người dùng vào bước checkout hoặc pending, lưu giao dịch đang chờ vào Supabase
+  useEffect(() => {
+    if (!isOpen || (step !== 'checkout' && step !== 'pending')) return
+
+    const registerPendingTx = async () => {
+      if (isSupabaseConfigured() && supabase) {
+        try {
+          await supabase.from('transactions').upsert(
+            {
+              order_code: transactionCode,
+              user_id: currentUser?.id || null,
+              plan_id: currentPlan.id,
+              amount: planPrice,
+              credits_added: totalPlanCredits,
+              status: 'pending',
+              payment_method: 'vietqr_sepay',
+            },
+            { onConflict: 'order_code' }
+          )
+        } catch (e) {
+          console.warn('Lưu pending transaction:', e)
+        }
+      }
+    }
+
+    registerPendingTx()
+  }, [isOpen, step, transactionCode, currentPlan.id, planPrice, totalPlanCredits, currentUser?.id])
+
+  // 2. Tự động kiểm tra (polling) biến động thanh toán từ SePay Webhook qua Supabase mỗi 3 giây
+  useEffect(() => {
+    if (!isOpen || (step !== 'checkout' && step !== 'pending')) {
+      if (pollTimerRef.current) clearInterval(pollTimerRef.current)
+      return
+    }
+
+    const checkPaymentStatus = async () => {
+      if (isSupabaseConfigured() && supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('transactions')
+            .select('status, credits_added')
+            .eq('order_code', transactionCode)
+            .maybeSingle()
+
+          if (!error && data && data.status === 'completed') {
+            if (pollTimerRef.current) clearInterval(pollTimerRef.current)
+            setStep('success')
+            onPaymentSuccess(data.credits_added || totalPlanCredits, currentPlan.name)
+          }
+        } catch (err) {
+          // Bỏ qua lỗi mạng polling tạm thời
+        }
+      }
+    }
+
+    // Bắt đầu polling
+    pollTimerRef.current = setInterval(checkPaymentStatus, 3000)
+
+    return () => {
+      if (pollTimerRef.current) clearInterval(pollTimerRef.current)
+    }
+  }, [isOpen, step, transactionCode, totalPlanCredits, currentPlan.name, onPaymentSuccess])
+
   // Xử lý sao chép thông tin
   const handleCopy = (text: string, field: string) => {
     navigator.clipboard.writeText(text)
@@ -66,8 +131,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     setTimeout(() => setCopiedField(''), 2000)
   }
 
-  // Xử lý khi người dùng bấm "Tôi đã chuyển khoản":
-  // Chuyển sang màn hình xác nhận đã gửi thông tin, KHÔNG tự cộng credits và KHÔNG qua Zalo
+  // Xử lý khi người dùng bấm "Tôi đã chuyển khoản xong":
+  // Chuyển sang màn hình chờ hệ thống ghi nhận, KHÔNG tự cộng credits ảo
   const handleConfirmPaid = () => {
     setIsProcessing(true)
     setTimeout(() => {
