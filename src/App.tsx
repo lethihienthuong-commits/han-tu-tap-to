@@ -361,6 +361,7 @@ function App() {
   // Trạng thái xuất file
   const [isExporting, setIsExporting] = useState<boolean>(false)
   const [exportMessage, setExportMessage] = useState<string>('')
+  const [exportProgress, setExportProgress] = useState<number | null>(null)
 
   // Tìm kiếm danh sách các chữ đề xuất dựa trên chuỗi pinyin người dùng gõ
   const candidateList = useMemo<HanziCandidate[]>(() => {
@@ -493,10 +494,11 @@ function App() {
 
     try {
       setIsExporting(true)
+      setExportProgress(0)
       setExportMessage(
         willExportMulti
-          ? `Đang tạo trọn bộ vở ${effectiveBatchItems.length} trang A4...`
-          : 'Đang khởi tạo file Word (.docx)...'
+          ? `Đang chuẩn bị vẽ ${pagesToExport} trang A4... (0%)`
+          : 'Đang khởi tạo file Word... (0%)'
       )
 
       // 1. Tạo và tải file Word hoàn tất trước
@@ -516,6 +518,20 @@ function App() {
         },
         multiPageItems: willExportMulti ? effectiveBatchItems : undefined,
         charRowLimit: charRowLimit > 0 ? charRowLimit : undefined,
+        onProgress: (percent, current, total) => {
+          setExportProgress(percent)
+          if (percent < 85) {
+            setExportMessage(
+              total > 1
+                ? `Đang tạo trang ${current}/${total} chữ (${percent}%)`
+                : `Đang vẽ ô tập tô (${percent}%)`
+            )
+          } else if (percent < 100) {
+            setExportMessage(`Đang nén & đóng gói file Word (${percent}%)`)
+          } else {
+            setExportMessage(`Đã hoàn tất 100%! Đang kích hoạt tải về...`)
+          }
+        },
       })
 
       // 2. KHI TẢI FILE THÀNH CÔNG RỒI MỚI CHÍNH THỨC TRỪ CREDITS
@@ -523,11 +539,15 @@ function App() {
       updateCredits(remaining)
       setExportMessage(
         pagesToExport > 1
-          ? `Đã tải xuống thành công trọn bộ! (Trừ ${pagesToExport} Credits, còn lại ${remaining})`
+          ? `Đã tải xuống thành công trọn bộ ${pagesToExport} trang! (Trừ ${pagesToExport} Credits, còn lại ${remaining})`
           : `Đã tải xuống file Word thành công! (Trừ 1 Credit, còn lại ${remaining})`
       )
-      setTimeout(() => setExportMessage(''), 4000)
+      setTimeout(() => {
+        setExportMessage('')
+        setExportProgress(null)
+      }, 4000)
     } catch (error: any) {
+      setExportProgress(null)
       if (error?.message === 'USER_CANCELLED') {
         setExportMessage('Đã hủy tải file (Không trừ Credits)')
         setTimeout(() => setExportMessage(''), 2500)
@@ -1092,7 +1112,10 @@ function App() {
           >
             {isExporting ? (
               <>
-                <span className="spinner"></span> {exportMessage || 'Đang tạo file Word...'}
+                <span className="spinner"></span>{' '}
+                {exportProgress !== null
+                  ? `Đang xuất ${exportProgress}%...`
+                  : exportMessage || 'Đang tạo file Word...'}
               </>
             ) : (
               <>
@@ -1136,9 +1159,46 @@ function App() {
             📄 Tạo giấy kẻ ô trống
           </button>
 
-          {exportMessage && <div className="status-toast">{exportMessage}</div>}
+          {exportMessage && !isExporting && (
+            <div className="status-toast">{exportMessage}</div>
+          )}
         </div>
       </header>
+
+      {/* Modal hiển thị tiến độ xuất file Word (%) trực quan */}
+      {isExporting && exportProgress !== null && (
+        <div className="export-progress-overlay no-print" role="dialog" aria-modal="true">
+          <div className="export-progress-card">
+            <div className="export-progress-spinner-wrap">
+              <div className="export-pulse-ring"></div>
+              <span className="export-progress-percent-huge">{exportProgress}%</span>
+            </div>
+
+            <h3 className="export-progress-title">
+              {exportProgress < 85
+                ? 'Đang khởi tạo các trang tập tô...'
+                : exportProgress < 100
+                ? 'Đang nén & đóng gói file Word...'
+                : 'Đã hoàn tất 100%!'}
+            </h3>
+
+            <div className="export-progress-bar-track">
+              <div
+                className="export-progress-bar-thumb"
+                style={{ width: `${exportProgress}%` }}
+              />
+            </div>
+
+            <p className="export-progress-detail">
+              {exportMessage}
+            </p>
+
+            <div className="export-progress-subhint">
+              ⏳ Quá trình tạo file đang diễn ra, bạn vui lòng đợi trong giây lát nhé!
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Container ẩn để ép trình duyệt nạp sẵn tất cả glyph các font chữ cho thiết bị di động */}
       <div

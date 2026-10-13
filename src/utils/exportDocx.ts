@@ -117,6 +117,7 @@ export interface ExportOptions {
   branding?: BrandingOptions
   multiPageItems?: MultiPageItem[]
   charRowLimit?: number // Số hàng có chữ mẫu (VD: 2 hàng đầu có chữ tô, các hàng dưới ô trống tự viết)
+  onProgress?: (percent: number, current: number, total: number) => void
 }
 
 /**
@@ -206,7 +207,8 @@ function createPageSection(
   fontOpt: (typeof FONT_OPTIONS)[0],
   charSize: CharSize,
   branding?: BrandingOptions,
-  charRowLimit?: number
+  charRowLimit?: number,
+  precomputedEmptyBytes?: Uint8Array
 ) {
   // 1. Tạo hình ảnh ô có chữ tập tô
   const imageWithCharBytes = generateTianzigeImage(
@@ -218,16 +220,18 @@ function createPageSection(
     '#a0a0a0',
     fontOpt.fontWeight
   )
-  // 2. Tạo hình ảnh ô trống (dành cho các hàng sau để học viên tự viết tay)
-  const imageEmptyBytes = generateTianzigeImage(
-    '',
-    fontOpt.fontFamily,
-    charSize,
-    200,
-    '#c0c0c0',
-    '#a0a0a0',
-    fontOpt.fontWeight
-  )
+  // 2. Tái sử dụng hình ảnh ô trống (tiết kiệm bộ nhớ & tối ưu tốc độ)
+  const imageEmptyBytes =
+    precomputedEmptyBytes ||
+    generateTianzigeImage(
+      '',
+      fontOpt.fontFamily,
+      charSize,
+      200,
+      '#c0c0c0',
+      '#a0a0a0',
+      fontOpt.fontWeight
+    )
   const boxPixelSize = Math.floor(480 / cols)
 
   const tableRows: TableRow[] = []
@@ -461,6 +465,7 @@ export async function exportToWord({
   branding,
   multiPageItems,
   charRowLimit,
+  onProgress,
 }: ExportOptions): Promise<boolean> {
   const fontOpt = FONT_OPTIONS.find((f) => f.id === fontId) || FONT_OPTIONS[0]
 
@@ -470,26 +475,65 @@ export async function exportToWord({
       ? multiPageItems
       : [{ char, pinyin }]
 
-  // Khởi tạo các Section trong Word cho từng chữ
-  const sections = itemsToExport.map((item) =>
-    createPageSection(
-      item.char,
-      item.pinyin,
-      rows,
-      cols,
-      fontOpt,
-      charSize,
-      branding,
-      charRowLimit
-    )
+  const total = itemsToExport.length
+
+  // Pre-generate imageEmptyBytes ONCE per export job so we don't draw thousands of identical empty canvases!
+  const precomputedEmptyBytes = generateTianzigeImage(
+    '',
+    fontOpt.fontFamily,
+    charSize,
+    200,
+    '#c0c0c0',
+    '#a0a0a0',
+    fontOpt.fontWeight
   )
+
+  // Thông báo tiến độ khởi đầu 0%
+  onProgress?.(0, 0, total)
+
+  // Khởi tạo các Section trong Word cho từng trang A4
+  const sections: any[] = []
+  for (let i = 0; i < total; i++) {
+    const item = itemsToExport[i]
+    sections.push(
+      createPageSection(
+        item.char,
+        item.pinyin,
+        rows,
+        cols,
+        fontOpt,
+        charSize,
+        branding,
+        charRowLimit,
+        precomputedEmptyBytes
+      )
+    )
+
+    // Tiến độ giai đoạn 1 (Vẽ các trang Word): từ 0% đến 80%
+    const percent = Math.min(80, Math.round(((i + 1) / total) * 80))
+
+    // Trả quyền điều khiển cho JavaScript Event Loop định kỳ để UI cập nhật % mượt mà
+    if (i % 2 === 0 || i === total - 1) {
+      onProgress?.(percent, i + 1, total)
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    }
+  }
+
+  // Giai đoạn 2: Nén và đóng gói cấu trúc file .docx (80% -> 95%)
+  onProgress?.(85, total, total)
+  await new Promise((resolve) => setTimeout(resolve, 15))
 
   const doc = new Document({
     sections,
   })
 
+  onProgress?.(92, total, total)
+  await new Promise((resolve) => setTimeout(resolve, 15))
+
   // Đóng gói file Word và kích hoạt tải về máy
   const blob = await Packer.toBlob(doc)
+
+  onProgress?.(100, total, total)
   const fileName =
     itemsToExport.length > 1
       ? `Tap_to_chu_Han_${itemsToExport.length}_trang.docx`
