@@ -6,6 +6,7 @@ import {
   type CharSize,
 } from './components/TianzigeBox'
 import { exportToWord } from './utils/exportDocx'
+import { exportToPdf } from './utils/exportPdf'
 import { searchHanziByPinyin, type HanziCandidate } from './utils/pinyinSearch'
 import { extractTextFromFile } from './utils/fileExtractor'
 import { PaymentModal } from './components/PaymentModal'
@@ -474,6 +475,92 @@ function App() {
       })
     }
   }, [fontId, previewItem.char])
+
+  // Xử lý xuất file PDF (.pdf) - Chuẩn in A4 cố định 100% không bao giờ nhảy trang
+  const handleExportPdf = async () => {
+    const willExportMulti = isVipMode && effectiveBatchItems.length > 1
+    const pagesToExport = willExportMulti ? effectiveBatchItems.length : 1
+
+    // Kiểm tra số dư Credits: 1 trang = 1 credit (bất kể xuất 1 trang hay cả bộ)
+    if (userCredits < pagesToExport) {
+      setIsPaymentModalOpen(true)
+      alert(
+        `⚠️ Bạn cần ${pagesToExport} Credits để xuất ${pagesToExport} trang PDF A4, nhưng số dư hiện tại chỉ còn ${userCredits} Credits.\n\nVui lòng nạp thêm Credits để tiếp tục xuất file nhé!`
+      )
+      return
+    }
+
+    const singleExportChar = effectiveBatchItems.length === 1 ? effectiveBatchItems[0].char : previewItem.char
+    const singleExportPinyin = effectiveBatchItems.length === 1 ? effectiveBatchItems[0].pinyin : previewItem.pinyin
+
+    try {
+      setIsExporting(true)
+      setExportProgress(0)
+      setExportMessage(
+        willExportMulti
+          ? `Đang chuẩn bị vẽ ${pagesToExport} trang PDF A4... (0%)`
+          : 'Đang khởi tạo file PDF... (0%)'
+      )
+
+      // 1. Tạo và tải file PDF hoàn tất trước
+      await exportToPdf({
+        char: singleExportChar,
+        pinyin: singleExportPinyin,
+        rows,
+        cols,
+        fontId,
+        charSize,
+        branding: {
+          centerName: centerName.trim() || undefined,
+          teacherName: teacherName.trim() || undefined,
+          phone: hotline.trim() || undefined,
+          slogan: slogan.trim() || undefined,
+          logoDataUrl: logoDataUrl || undefined,
+        },
+        multiPageItems: willExportMulti ? effectiveBatchItems : undefined,
+        charRowLimit: charRowLimit > 0 ? charRowLimit : undefined,
+        onProgress: (percent, current, total) => {
+          setExportProgress(percent)
+          if (percent < 90) {
+            setExportMessage(
+              total > 1
+                ? `Đang vẽ trang PDF ${current}/${total} chữ (${percent}%)`
+                : `Đang vẽ ô tập tô (${percent}%)`
+            )
+          } else if (percent < 100) {
+            setExportMessage(`Đang đóng gói file PDF (${percent}%)`)
+          } else {
+            setExportMessage(`Đã hoàn tất 100%! Đang kích hoạt tải về...`)
+          }
+        },
+      })
+
+      // 2. KHI TẢI FILE THÀNH CÔNG RỒI MỚI CHÍNH THỨC TRỪ CREDITS
+      const remaining = userCredits - pagesToExport
+      updateCredits(remaining)
+      setExportMessage(
+        pagesToExport > 1
+          ? `Đã tải xuống thành công trọn bộ file PDF ${pagesToExport} trang! (Trừ ${pagesToExport} Credits, còn lại ${remaining})`
+          : `Đã tải xuống file PDF thành công! (Trừ 1 Credit, còn lại ${remaining})`
+      )
+      setTimeout(() => {
+        setExportMessage('')
+        setExportProgress(null)
+      }, 4000)
+    } catch (error: any) {
+      setExportProgress(null)
+      if (error?.message === 'USER_CANCELLED') {
+        setExportMessage('Đã hủy tải file (Không trừ Credits)')
+        setTimeout(() => setExportMessage(''), 2500)
+        return
+      }
+      console.error('Lỗi khi xuất file PDF:', error)
+      const errorMsg = error?.message || 'Có lỗi xảy ra khi tạo file PDF. File chưa được tải nên hệ thống KHÔNG trừ credit nào của bạn!'
+      alert(errorMsg)
+    } finally {
+      setIsExporting(false)
+    }
+  }
 
   // Xử lý xuất file Word (.docx)
   const handleExportWord = async () => {
@@ -1104,10 +1191,11 @@ function App() {
 
         {/* Nút hành động */}
         <div className="action-buttons">
+          {/* NÚT CHÍNH: Xuất file PDF (Chuẩn in A4 tuyệt đối không bao giờ nhảy trang) */}
           <button
             type="button"
             className="btn btn-primary"
-            onClick={handleExportWord}
+            onClick={handleExportPdf}
             disabled={isExporting}
           >
             {isExporting ? (
@@ -1115,7 +1203,7 @@ function App() {
                 <span className="spinner"></span>{' '}
                 {exportProgress !== null
                   ? `Đang xuất ${exportProgress}%...`
-                  : exportMessage || 'Đang tạo file Word...'}
+                  : exportMessage || 'Đang tạo file PDF...'}
               </>
             ) : (
               <>
@@ -1134,14 +1222,25 @@ function App() {
                   <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
                 {effectiveBatchItems.length > 1
-                  ? `Xuất trọn bộ vở (${effectiveBatchItems.length} trang .docx)`
+                  ? `Xuất trọn bộ vở (${effectiveBatchItems.length} trang .pdf)`
                   : effectiveBatchItems.length === 1
-                  ? `Xuất file Word 1 trang (${effectiveBatchItems[0].char} - .docx)`
+                  ? `Xuất file PDF 1 trang (${effectiveBatchItems[0].char} - .pdf)`
                   : previewItem.char
-                  ? 'Xuất file Word (.docx)'
-                  : 'Xuất giấy kẻ ô trống (.docx)'}
+                  ? 'Xuất file PDF (.pdf)'
+                  : 'Xuất giấy kẻ ô trống (.pdf)'}
               </>
             )}
+          </button>
+
+          {/* NÚT PHỤ: Xuất file Word (.docx) dự phòng nếu cần chỉnh sửa */}
+          <button
+            type="button"
+            className="btn btn-outline"
+            onClick={handleExportWord}
+            disabled={isExporting}
+            title="Xuất định dạng Microsoft Word (.docx)"
+          >
+            📝 Xuất file Word (.docx)
           </button>
 
           {/* Nút nhanh để tạo giấy kẻ ô trống tự viết */}
@@ -1165,7 +1264,7 @@ function App() {
         </div>
       </header>
 
-      {/* Modal hiển thị tiến độ xuất file Word (%) trực quan */}
+      {/* Modal hiển thị tiến độ xuất file (%) trực quan */}
       {isExporting && exportProgress !== null && (
         <div className="export-progress-overlay no-print" role="dialog" aria-modal="true">
           <div className="export-progress-card">
@@ -1175,10 +1274,10 @@ function App() {
             </div>
 
             <h3 className="export-progress-title">
-              {exportProgress < 85
-                ? 'Đang khởi tạo các trang tập tô...'
+              {exportProgress < 90
+                ? 'Đang khởi tạo các trang PDF A4...'
                 : exportProgress < 100
-                ? 'Đang nén & đóng gói file Word...'
+                ? 'Đang đóng gói file tài liệu...'
                 : 'Đã hoàn tất 100%!'}
             </h3>
 
