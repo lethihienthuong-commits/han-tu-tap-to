@@ -22,7 +22,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   currentCredits,
   currentUser,
   onRequireLogin,
-  onPaymentSuccess,
+  onPaymentSuccess: _onPaymentSuccess,
 }) => {
   const defaultPlan = CREDIT_PLANS && CREDIT_PLANS.length > 1 ? CREDIT_PLANS[1] : (CREDIT_PLANS[0] || {
     id: 'plan_teacher',
@@ -35,9 +35,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const [selectedPlan, setSelectedPlan] = useState<CreditPlan>(defaultPlan)
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodType>('vietqr')
-  const [step, setStep] = useState<'select' | 'checkout' | 'success'>('select')
+  const [step, setStep] = useState<'select' | 'checkout' | 'pending' | 'success'>('select')
   const [isProcessing, setIsProcessing] = useState<boolean>(false)
   const [copiedField, setCopiedField] = useState<string>('')
+  // Giữ mã giao dịch cố định trong suốt phiên mở modal
+  const [transactionCode] = useState<string>(() => 'HT' + Math.floor(100000 + (Math.random() * 900000)))
 
   if (!isOpen) return null
 
@@ -46,13 +48,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const BANK_NAME = 'VPBank'
   const ACCOUNT_NO = '0969246788'
   const ACCOUNT_NAME = 'LE THI HIEN THUONG'
+  const HOTLINE_ZALO = '0969246788'
 
   // Tổng số credits nhận được từ gói
   const currentPlan = selectedPlan || defaultPlan
   const totalPlanCredits = (currentPlan.credits || 1000) + (currentPlan.bonusCredits || 0)
-
-  // Mã giao dịch thanh toán duy nhất
-  const transactionCode = 'HT' + Math.floor(100000 + (Math.random() * 900000))
 
   // Tạo URL mã VietQR chuẩn liên ngân hàng NAPAS
   const planPrice = currentPlan.price || 99000
@@ -67,14 +67,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     setTimeout(() => setCopiedField(''), 2000)
   }
 
-  // Xử lý hoàn tất thanh toán
+  // Xử lý khi người dùng bấm "Tôi đã chuyển khoản":
+  // Chuyển sang màn hình "Chờ xác nhận đối soát", KHÔNG tự động cộng credits!
   const handleConfirmPaid = () => {
     setIsProcessing(true)
     setTimeout(() => {
       setIsProcessing(false)
-      setStep('success')
-      onPaymentSuccess(totalPlanCredits, selectedPlan.name)
-    }, 1500)
+      setStep('pending')
+    }, 800)
   }
 
   return (
@@ -305,6 +305,73 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {step === 'pending' && (
+          <div className="pending-step">
+            <div className="pending-icon-wrap">
+              <span className="pending-icon">⏳</span>
+            </div>
+            <h2>Đang Chờ Xác Nhận Thanh Toán</h2>
+            <p className="pending-desc">
+              Hệ thống đã tiếp nhận yêu cầu nạp <strong>{selectedPlan.name}</strong> ({selectedPlan.priceDisplay}).
+            </p>
+
+            <div className="pending-info-card">
+              <div className="pending-row">
+                <span className="pending-label">Mã giao dịch:</span>
+                <span className="pending-code">
+                  <strong>{transactionCode}</strong>
+                  <button
+                    type="button"
+                    className="btn-copy"
+                    onClick={() => handleCopy(transactionCode, 'pending_code')}
+                  >
+                    {copiedField === 'pending_code' ? '✓ Đã chép' : 'Sao chép'}
+                  </button>
+                </span>
+              </div>
+              <div className="pending-row">
+                <span className="pending-label">Gói nạp:</span>
+                <span>{selectedPlan.name} (+{totalPlanCredits} Credits)</span>
+              </div>
+              <div className="pending-row">
+                <span className="pending-label">Số tiền:</span>
+                <span className="pending-price">{selectedPlan.priceDisplay}</span>
+              </div>
+              <div className="pending-row">
+                <span className="pending-label">Trạng thái:</span>
+                <span className="pending-status-badge">🟡 Đang đối soát giao dịch ngân hàng</span>
+              </div>
+            </div>
+
+            <div className="pending-note-box">
+              <p>
+                💡 <strong>Kích hoạt Credits nhanh nhất:</strong>
+              </p>
+              <p style={{ margin: '6px 0' }}>
+                Vui lòng gửi ảnh chụp màn hình chuyển khoản hoặc mã giao dịch <strong>{transactionCode}</strong> qua Zalo để nhân viên duyệt ngay trong 1 phút!
+              </p>
+            </div>
+
+            <div className="pending-actions">
+              <a
+                href={`https://zalo.me/${HOTLINE_ZALO}`}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-zalo-confirm"
+              >
+                💬 Nhắn tin Zalo ({HOTLINE_ZALO}) kích hoạt tức thì ↗
+              </a>
+              <button
+                type="button"
+                className="btn-pending-back"
+                onClick={() => setStep('checkout')}
+              >
+                ← Quay lại xem mã QR / STK
+              </button>
             </div>
           </div>
         )}

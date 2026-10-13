@@ -595,6 +595,147 @@
   line-height: 1.4;
 }
 
+/* Bước: Chờ xác nhận thanh toán */
+.pending-step {
+  text-align: center;
+  padding: 16px 8px;
+}
+
+.pending-icon-wrap {
+  margin-bottom: 12px;
+}
+
+.pending-icon {
+  font-size: 50px;
+  display: inline-block;
+  animation: pulse-pend 2s infinite ease-in-out;
+}
+
+@keyframes pulse-pend {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.pending-step h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+}
+
+.pending-desc {
+  font-size: 14px;
+  color: #475569;
+  margin: 0 0 18px 0;
+}
+
+.pending-info-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  max-width: 440px;
+  margin: 0 auto 16px auto;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.pending-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pending-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.pending-code {
+  color: #1d4ed8;
+  font-size: 15px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pending-price {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.pending-status-badge {
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.pending-note-box {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 12px 16px;
+  max-width: 440px;
+  margin: 0 auto 20px auto;
+  font-size: 13px;
+  color: #1e40af;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.pending-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.btn-zalo-confirm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #0068ff, #0052cc);
+  color: #ffffff !important;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 13px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 104, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-zalo-confirm:hover {
+  background: linear-gradient(135deg, #0052cc, #003c99);
+  transform: translateY(-1px);
+}
+
+.btn-pending-back {
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-pending-back:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
 /* Bước 3: Thành công */
 .success-step {
   text-align: center;
