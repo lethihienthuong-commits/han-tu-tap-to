@@ -210,8 +210,8 @@ function App() {
     if (!batchText.trim()) return []
     // Lấy tất cả ký tự chữ Hán (hỗ trợ toàn bộ dải Unicode Han)
     const hanziChars = batchText.match(/[\p{Script=Han}]/gu) || []
-    // Giới hạn tối đa 1000 chữ tương ứng với tối đa 1000 trang cho cuốn tập
-    const limitedChars = hanziChars.slice(0, 1000)
+    // Giới hạn tối đa 5000 chữ tương ứng với tối đa 5000 trang cho cuốn tập
+    const limitedChars = hanziChars.slice(0, 5000)
     return limitedChars.map((ch, idx) => ({
       char: ch,
       pinyin: getPinyin(ch, { toneType: 'symbol' }),
@@ -351,7 +351,7 @@ function App() {
     setDragOverChipIndex(null)
   }
 
-  // Tổng số chữ Hán tìm thấy trong văn bản (để cảnh báo nếu người dùng dán quá 1000 chữ)
+  // Tổng số chữ Hán tìm thấy trong văn bản (để cảnh báo nếu người dùng dán quá 5000 chữ)
   const totalCharsFound = useMemo(() => {
     if (!batchText.trim()) return 0
     const all = batchText.match(/[\p{Script=Han}]/gu) || []
@@ -713,7 +713,7 @@ function App() {
         <div className="vip-batch-section">
           <div className="vip-batch-header">
             <span className="vip-batch-title">
-              <span className="vip-star">★</span> Nhập danh sách từ vựng (Mỗi chữ 1 trang A4 trọn vẹn • Tối đa 1000 trang):
+              <span className="vip-star">★</span> Nhập danh sách từ vựng (Mỗi chữ 1 trang A4 trọn vẹn • Tối đa 5000 trang):
             </span>
             <div className="vip-batch-actions">
               <span className="page-count-badge" title="Số trang sẽ xuất sau khi loại trừ">
@@ -767,9 +767,9 @@ function App() {
               ℹ️ {fileReadStatus}
             </div>
           )}
-          {totalCharsFound > 1000 && (
+          {totalCharsFound > 5000 && (
             <div className="vip-limit-warning">
-              ⚠️ Văn bản có {totalCharsFound} chữ Hán. Hệ thống tự động giới hạn <strong>1000 trang đầu tiên</strong> để tối ưu tốc độ xuất file.
+              ⚠️ Văn bản có {totalCharsFound} chữ Hán. Hệ thống tự động giới hạn <strong>5000 trang đầu tiên</strong> để tối ưu tốc độ xuất file.
             </div>
           )}
           <textarea
@@ -781,7 +781,7 @@ function App() {
               setActivePageIndex(0)
               setExcludedIndices(new Set())
             }}
-            placeholder="Dán đoạn văn hoặc danh sách từ vào đây (tối đa 1000 chữ tương ứng cuốn tập 1000 trang). Mỗi chữ Hán sẽ là 1 trang A4 đầy đủ các dòng tập tô!"
+            placeholder="Dán đoạn văn hoặc danh sách từ vào đây (tối đa 5000 chữ tương ứng cuốn tập 5000 trang). Mỗi chữ Hán sẽ là 1 trang A4 đầy đủ các dòng tập tô!"
           />
 
           {/* Danh sách các chữ liệt kê & Cho phép kéo thả sắp xếp, bấm bỏ chữ hoặc xem trước */}

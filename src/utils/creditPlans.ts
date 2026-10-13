@@ -59,7 +59,7 @@ export const CREDIT_PLANS: CreditPlan[] = [
       'Tổng nhận tới 4.000 trang A4 (Tặng 800 trang)',
       'Giá chạm đáy chỉ ~49 đồng / trang in',
       'Chèn Logo, Slogan & Hotline trung tâm',
-      'Xuất trọn bộ nhiều tập sách lớn tới 1000 trang/file',
+      'Xuất trọn bộ nhiều tập sách lớn tới 5000 trang/file',
     ],
   },
 ]
